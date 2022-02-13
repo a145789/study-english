@@ -24,7 +24,7 @@ app.use(
     verbose: true
   })
 )
-app.use(require('koa-static')(__dirname + '/public'))
+app.use(require('koa-static')(__dirname + '/dist'))
 
 // logger
 app.use(async (ctx, next) => {
