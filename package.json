@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "sc": "cd ./scripts && pnpm run"
+    "sc": "cd ./scripts && pnpm sc"
   },
   "author": "",
   "license": "ISC"

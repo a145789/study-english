@@ -5,6 +5,8 @@ const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 const historyApiFallback = require('koa-history-api-fallback')
+const conditional = require('koa-conditional-get')
+const etag = require('koa-etag')
 
 const index = require('./routes/index')
 
@@ -24,6 +26,10 @@ app.use(
     verbose: true
   })
 )
+app.use(conditional())
+
+// add etags
+app.use(etag())
 app.use(require('koa-static')(__dirname + '/dist'))
 
 // logger
