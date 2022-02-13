@@ -1,0 +1,14 @@
+{
+  "name": "scripts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "sc": "zx ./index.mjs"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "zx": "^5.0.0"
+  }
+}

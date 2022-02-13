@@ -1,0 +1,13 @@
+#!/usr/bin/env zx
+
+await $`git pull`
+
+await $`cd ../web-app && pnpm i && pnpm build && rm -rf node_modules`
+
+await $`rm -rf ../service/dist`
+
+await $`mv ../web-app/dist ../service/dist`
+
+await $`rm -rf ../web-app/dist`
+
+console.log('Done!')
