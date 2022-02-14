@@ -10,6 +10,7 @@ type ActionType<T extends object> = {
 interface ContextStateType {
   title: string;
   isLoading: boolean;
+  isShowTabBar: boolean;
   dispatch: (action: ActionType<Omit<ContextStateType, 'dispatch'>>) => void;
 }
 
@@ -24,13 +25,19 @@ function reducer(
       return { ...state, title: action.payload };
     case 'isLoading':
       return { ...state, isLoading: action.payload };
+    case 'isShowTabBar':
+      return { ...state, isShowTabBar: action.payload };
     default:
       return state;
   }
 }
 
 const ContextApp: FC = ({ children }) => {
-  const [state, dispatch] = useReducer(reducer, { title: '学英语', isLoading: false });
+  const [state, dispatch] = useReducer(reducer, {
+    title: '学英语',
+    isLoading: false,
+    isShowTabBar: true,
+  });
 
   return (
     <ContextData.Provider value={{ ...state, dispatch }}>{children}</ContextData.Provider>

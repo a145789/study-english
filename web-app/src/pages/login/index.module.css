@@ -1,0 +1,25 @@
+.login {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0 20px;
+  background-image: url('../../images/login_bg.jpg');
+}
+
+.login_form {
+  margin: 64px 0 0;
+  border-radius: 2px 2px 0 0;
+  opacity: 0.88;
+}
+
+.login_form :global .adm-list-body {
+  border-radius: 24px 24px 0 0;
+}
+
+.login_form :global .adm-form-footer {
+  padding: 0;
+}
+
+.login_button {
+  --border-radius: 0 0 24px 24px;
+}

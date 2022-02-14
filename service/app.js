@@ -10,6 +10,8 @@ const etag = require('koa-etag')
 
 const index = require('./routes/index')
 
+const imgExt = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']
+
 // error handler
 onerror(app)
 
@@ -30,6 +32,16 @@ app.use(conditional())
 
 // add etags
 app.use(etag())
+app.use((ctx, next) => {
+  if (imgExt.some(img => ctx.url.includes(img))) {
+    ctx.set('Cache-Control', 'max-age=600')
+  }
+  if (ctx.url.includes('favicon')) {
+    ctx.set('Cache-Control', 'max-age=31536000')
+  }
+
+  return next()
+})
 app.use(require('koa-static')(__dirname + '/dist'))
 
 // logger

@@ -4,20 +4,25 @@ import React, { useContext } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 
 import { ContextData } from '../../store/ContextApp';
+import classes from './index.module.css';
 
 const { Item: TabBarItem } = TabBar;
 
 const OutMain = () => {
-  const { title } = useContext(ContextData);
+  const { title, isShowTabBar } = useContext(ContextData);
   return (
     <>
-      <NavBar back={null}>{title}</NavBar>
-      <div style={{ flex: 1 }}>
-        <Link to="/list">list</Link>
-        <Link to="/login">login</Link>
-        <Outlet></Outlet>
+      <NavBar className="b-b-2" back={null}>
+        {title}
+      </NavBar>
+      <div className={classes.center}>
+        <Outlet />
       </div>
-      <TabBar>{[<TabBarItem key="Home" icon={<AppOutline />} title="首页" />]}</TabBar>
+      {isShowTabBar && (
+        <TabBar safeArea className="b-t-2">
+          {[<TabBarItem key="Home" icon={<AppOutline />} title="首页" />]}
+        </TabBar>
+      )}
     </>
   );
 };
