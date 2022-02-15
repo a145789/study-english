@@ -3,7 +3,7 @@
   flex-direction: column;
   height: 100%;
   padding: 0 20px;
-  background-image: url('../../images/login_bg.jpg');
+  background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);
 }
 
 .login_form {
@@ -22,4 +22,8 @@
 
 .login_button {
   --border-radius: 0 0 24px 24px;
+}
+
+.login_switch {
+  margin: 28px auto;
 }

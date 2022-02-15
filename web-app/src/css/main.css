@@ -46,8 +46,8 @@ body {
 }
 
 :root:root {
-  --adm-color-primary: #3a7afe;
-  --adm-color-success: #19caad;
-  --adm-color-warning: #fd7d36;
+  --adm-color-primary: #66a6ff;
+  --adm-color-success: #43e97b;
+  --adm-color-warning: #fee140;
   --adm-color-danger: #f4606c;
 }

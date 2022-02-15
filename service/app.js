@@ -37,6 +37,7 @@ app.use((ctx, next) => {
     ctx.set('Cache-Control', 'max-age=600')
   }
   if (ctx.url.includes('favicon')) {
+    console.log('favicon')
     ctx.set('Cache-Control', 'max-age=31536000')
   }
 
