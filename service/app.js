@@ -33,6 +33,7 @@ app.use(conditional())
 // add etags
 app.use(etag())
 app.use((ctx, next) => {
+  console.log('change')
   if (imgExt.some(img => ctx.url.includes(img))) {
     ctx.set('Cache-Control', 'max-age=600')
   }
@@ -41,7 +42,7 @@ app.use((ctx, next) => {
     ctx.set('Cache-Control', 'max-age=31536000')
   }
 
-  return next()
+  await next()
 })
 app.use(require('koa-static')(__dirname + '/dist'))
 
