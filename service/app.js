@@ -32,7 +32,7 @@ app.use(conditional())
 
 // add etags
 app.use(etag())
-app.use((ctx, next) => {
+app.use(async (ctx, next) => {
   console.log('change')
   if (imgExt.some(img => ctx.url.includes(img))) {
     ctx.set('Cache-Control', 'max-age=600')
