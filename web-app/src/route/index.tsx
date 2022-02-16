@@ -21,6 +21,10 @@ const Route: FC = () => {
           element: <List />,
         },
         {
+          path: 'login',
+          element: <Login />,
+        },
+        {
           path: 'login/:process',
           element: <Login />,
         },

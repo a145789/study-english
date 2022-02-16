@@ -8,6 +8,8 @@ const historyApiFallback = require('koa-history-api-fallback')
 const conditional = require('koa-conditional-get')
 const etag = require('koa-etag')
 
+const mongodb = require('./db/index')
+
 const index = require('./routes/index')
 
 const imgExt = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']
@@ -16,6 +18,7 @@ const imgExt = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']
 onerror(app)
 
 // middlewares
+app.use(mongodb())
 app.use(
   bodyparser({
     enableTypes: ['json', 'form', 'text']
@@ -33,12 +36,10 @@ app.use(conditional())
 // add etags
 app.use(etag())
 app.use(async (ctx, next) => {
-  console.log('change')
   if (imgExt.some(img => ctx.url.includes(img))) {
     ctx.set('Cache-Control', 'max-age=600')
   }
   if (ctx.url.includes('favicon')) {
-    console.log('favicon')
     ctx.set('Cache-Control', 'max-age=31536000')
   }
 

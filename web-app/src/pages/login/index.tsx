@@ -1,5 +1,5 @@
-import { Button, Form, Input } from 'antd-mobile';
-import React, { useContext, useEffect, useState } from 'react';
+import { Button, Form, Input, Toast } from 'antd-mobile';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 const { Item: FormItem } = Form;
@@ -7,7 +7,16 @@ import { useNavigate } from 'react-router-dom';
 
 import { CertificationProcess } from '../../constants';
 import { ContextData } from '../../store/ContextApp';
+import { getHandle } from '../../utils/fetch';
 import classes from './index.module.css';
+
+const enum CodeStatus {
+  initial,
+  running,
+  rest,
+}
+
+const INIT_PENDING_TIME = 60;
 
 const checkUserEmail = (_: any, value: string) => {
   if (value && !/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/.test(value)) {
@@ -38,18 +47,43 @@ const checkPassWord = (_: any, value: string) => {
 const Login = () => {
   const { navBar, dispatch } = useContext(ContextData);
   const navigate = useNavigate();
+  const [form] = Form.useForm();
 
   const { process } = useParams();
-
-  console.log(process);
 
   const [certificationProcess, setCertificationProcess] = useState(
     process || CertificationProcess.login,
   );
+  const [codeStatus, setCodeStatus] = useState(CodeStatus.initial);
+  const [codePendingNum, setPendingCode] = useState(INIT_PENDING_TIME);
+
+  const codeTimer = useRef<number>(0);
 
   const submit = (values: any) => {
     dispatch({ type: 'isLoading', payload: true });
     console.log(values);
+  };
+
+  const sendCode = async () => {
+    const email = form.getFieldValue('email');
+    const emailErr = form.getFieldError('email');
+    if (!email) {
+      Toast.show({
+        icon: 'fail',
+        content: '请先填写邮箱',
+      });
+      return;
+    }
+    if (emailErr?.length) {
+      Toast.show({
+        icon: 'fail',
+        content: emailErr[0],
+      });
+      return;
+    }
+    const res = getHandle('getEmailCode', { email });
+    console.log(res);
+    // setCodeStatus(CodeStatus.running);
   };
 
   // 去注册
@@ -60,6 +94,9 @@ const Login = () => {
   useEffect(() => {
     switch (certificationProcess) {
       case CertificationProcess.login:
+        setCodeStatus(CodeStatus.initial);
+        setPendingCode(INIT_PENDING_TIME);
+        clearTimeout(codeTimer.current);
         dispatch({
           type: 'navBar',
           payload: {
@@ -99,6 +136,24 @@ const Login = () => {
   }, [certificationProcess]);
 
   useEffect(() => {
+    if (codeStatus !== CodeStatus.running) {
+      return;
+    }
+    codeTimer.current = setTimeout(() => {
+      const nextPendingNum = codePendingNum - 1;
+      if (nextPendingNum === 0) {
+        setCodeStatus(CodeStatus.rest);
+        setPendingCode(INIT_PENDING_TIME);
+        return;
+      }
+      setPendingCode(nextPendingNum);
+    }, 1000);
+    return () => {
+      clearTimeout(codeTimer.current);
+    };
+  }, [codeStatus, codePendingNum]);
+
+  useEffect(() => {
     dispatch({ type: 'isShowTabBar', payload: false });
     return () => {
       dispatch({ type: 'isShowTabBar', payload: true });
@@ -108,6 +163,7 @@ const Login = () => {
   return (
     <div className={classes.login}>
       <Form
+        form={form}
         className={classes.login_form}
         onFinish={submit}
         footer={
@@ -120,30 +176,6 @@ const Login = () => {
             提交
           </Button>
         }>
-        {certificationProcess === CertificationProcess.register && (
-          <>
-            <FormItem
-              name="email"
-              label="邮箱"
-              rules={[
-                { required: true, message: '邮箱不能为空' },
-                { validator: checkUserEmail },
-              ]}>
-              <Input placeholder="请输入邮箱" clearable />
-            </FormItem>
-            <FormItem
-              name="code"
-              label="短信验证码"
-              rules={[{ required: true, message: '短信验证码不能为空' }]}
-              extra={
-                <Button color="primary" fill="none" size="mini">
-                  发送验证码
-                </Button>
-              }>
-              <Input placeholder="请输入" type="number" />
-            </FormItem>
-          </>
-        )}
         <FormItem
           name="username"
           label="账号"
@@ -162,6 +194,39 @@ const Login = () => {
           ]}>
           <Input placeholder="请输入密码" clearable type="password" />
         </FormItem>
+        {certificationProcess === CertificationProcess.register && (
+          <>
+            <FormItem
+              name="email"
+              label="邮箱"
+              rules={[
+                { required: true, message: '邮箱不能为空' },
+                { validator: checkUserEmail },
+              ]}>
+              <Input placeholder="请输入邮箱" clearable />
+            </FormItem>
+            <FormItem
+              name="code"
+              label="短信验证码"
+              rules={[{ required: true, message: '短信验证码不能为空' }]}
+              extra={
+                <Button
+                  color="primary"
+                  fill="none"
+                  size="small"
+                  disabled={codeStatus === CodeStatus.running}
+                  onClick={() => sendCode()}>
+                  {codeStatus === CodeStatus.initial
+                    ? '发送验证码'
+                    : codeStatus === CodeStatus.running
+                    ? codePendingNum
+                    : '重新发送'}
+                </Button>
+              }>
+              <Input placeholder="请输入" type="number" />
+            </FormItem>
+          </>
+        )}
       </Form>
 
       {certificationProcess !== CertificationProcess.updatePassword && (

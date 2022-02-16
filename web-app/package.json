@@ -11,11 +11,13 @@
   "dependencies": {
     "antd-mobile": "^5.0.0-rc.12",
     "antd-mobile-icons": "^0.2.2",
+    "qs": "^6.10.3",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "react-router-dom": "^6.0.0"
   },
   "devDependencies": {
+    "@types/qs": "^6.9.7",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^5.11.0",
