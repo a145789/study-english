@@ -16,6 +16,7 @@ specifiers:
   eslint-plugin-prettier: ^4.0.0
   eslint-plugin-react: ^7.28.0
   eslint-plugin-simple-import-sort: ^7.0.0
+  md5-typescript: ^1.0.5
   prettier: ^2.5.1
   qs: ^6.10.3
   react: ^17.0.0
@@ -30,6 +31,7 @@ specifiers:
 dependencies:
   antd-mobile: registry.npmmirror.com/antd-mobile/5.0.0-rc.26_react-dom@17.0.2+react@17.0.2
   antd-mobile-icons: registry.npmmirror.com/antd-mobile-icons/0.2.2
+  md5-typescript: registry.npmmirror.com/md5-typescript/1.0.5
   qs: registry.npmmirror.com/qs/6.10.3
   react: registry.npmmirror.com/react/17.0.2
   react-dom: registry.npmmirror.com/react-dom/17.0.2_react@17.0.2
@@ -2567,6 +2569,12 @@ packages:
     dependencies:
       sourcemap-codec: registry.npmmirror.com/sourcemap-codec/1.4.8
     dev: true
+
+  registry.npmmirror.com/md5-typescript/1.0.5:
+    resolution: {integrity: sha512-ovAc4EtiNt2dY8JPhPr/wkC9h4U5k/nuClNVcG0Ga3V1rMlYpAY24ZaaymFXJlz+ccJ6UMPo3FSaVKe7czBsXw==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/md5-typescript/-/md5-typescript-1.0.5.tgz}
+    name: md5-typescript
+    version: 1.0.5
+    dev: false
 
   registry.npmmirror.com/merge2/1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/merge2/-/merge2-1.4.1.tgz}

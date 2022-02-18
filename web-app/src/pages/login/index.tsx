@@ -1,19 +1,21 @@
 import { Button, Form, Input, Toast } from 'antd-mobile';
+import { Md5 } from 'md5-typescript';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 const { Item: FormItem } = Form;
+const { show: ToastShow } = Toast;
 import { useNavigate } from 'react-router-dom';
 
 import { CertificationProcess } from '../../constants';
 import { ContextData } from '../../store/ContextApp';
-import { getHandle } from '../../utils/fetch';
+import { getHandle, postHandle } from '../../utils/fetch';
 import classes from './index.module.css';
 
 const enum CodeStatus {
-  initial,
-  running,
-  rest,
+  send,
+  pending,
+  resend,
 }
 
 const INIT_PENDING_TIME = 60;
@@ -54,47 +56,72 @@ const Login = () => {
   const [certificationProcess, setCertificationProcess] = useState(
     process || CertificationProcess.login,
   );
-  const [codeStatus, setCodeStatus] = useState(CodeStatus.initial);
+  const [codeStatus, setCodeStatus] = useState(CodeStatus.send);
   const [codePendingNum, setPendingCode] = useState(INIT_PENDING_TIME);
 
   const codeTimer = useRef<number>(0);
 
-  const submit = (values: any) => {
+  const submit = async (values: any) => {
     dispatch({ type: 'isLoading', payload: true });
-    console.log(values);
+    switch (certificationProcess) {
+      case CertificationProcess.login:
+        break;
+      case CertificationProcess.register: {
+        const { err } = await postHandle('register', {
+          ...values,
+          password: Md5.init(values.password),
+        });
+        if (err) {
+          dispatch({ type: 'isLoading', payload: false });
+          return;
+        }
+
+        ToastShow({
+          icon: 'success',
+          content: '注册成功',
+        });
+
+        break;
+      }
+      case CertificationProcess.updatePassword:
+        console.log('updatePassword');
+        break;
+
+      default:
+        break;
+    }
+    dispatch({ type: 'isLoading', payload: false });
   };
 
   const sendCode = async () => {
     const email = form.getFieldValue('email');
     const emailErr = form.getFieldError('email');
     if (!email) {
-      Toast.show({
+      ToastShow({
         icon: 'fail',
         content: '请先填写邮箱',
       });
       return;
     }
     if (emailErr?.length) {
-      Toast.show({
+      ToastShow({
         icon: 'fail',
         content: emailErr[0],
       });
       return;
     }
-    const res = getHandle('getEmailCode', { email });
-    console.log(res);
-    // setCodeStatus(CodeStatus.running);
-  };
+    const { err } = await getHandle('getEmailCode', { email });
+    if (err) {
+      return;
+    }
 
-  // 去注册
-  const toRegister = () => {
-    navigate('/register');
+    setCodeStatus(CodeStatus.pending);
   };
 
   useEffect(() => {
     switch (certificationProcess) {
       case CertificationProcess.login:
-        setCodeStatus(CodeStatus.initial);
+        setCodeStatus(CodeStatus.send);
         setPendingCode(INIT_PENDING_TIME);
         clearTimeout(codeTimer.current);
         dispatch({
@@ -136,14 +163,13 @@ const Login = () => {
   }, [certificationProcess]);
 
   useEffect(() => {
-    if (codeStatus !== CodeStatus.running) {
+    if (codeStatus !== CodeStatus.pending) {
       return;
     }
     codeTimer.current = setTimeout(() => {
       const nextPendingNum = codePendingNum - 1;
-      if (nextPendingNum === 0) {
-        setCodeStatus(CodeStatus.rest);
-        setPendingCode(INIT_PENDING_TIME);
+      if (nextPendingNum < 0) {
+        setCodeStatus(CodeStatus.resend);
         return;
       }
       setPendingCode(nextPendingNum);
@@ -206,19 +232,19 @@ const Login = () => {
               <Input placeholder="请输入邮箱" clearable />
             </FormItem>
             <FormItem
-              name="code"
+              name="emailCode"
               label="短信验证码"
-              rules={[{ required: true, message: '短信验证码不能为空' }]}
+              rules={[{ required: true, message: '请输入四位验证码', len: 4 }]}
               extra={
                 <Button
                   color="primary"
                   fill="none"
                   size="small"
-                  disabled={codeStatus === CodeStatus.running}
+                  disabled={codeStatus === CodeStatus.pending}
                   onClick={() => sendCode()}>
-                  {codeStatus === CodeStatus.initial
+                  {codeStatus === CodeStatus.send
                     ? '发送验证码'
-                    : codeStatus === CodeStatus.running
+                    : codeStatus === CodeStatus.pending
                     ? codePendingNum
                     : '重新发送'}
                 </Button>

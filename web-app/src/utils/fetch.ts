@@ -1,5 +1,17 @@
+import { Toast } from 'antd-mobile';
 import qs from 'qs';
-const fetchHandle = async (url: string, method: 'POST' | 'GET', data: any) => {
+
+import { ResponseCode } from '../constants';
+
+interface Response<T> {
+  code: ResponseCode;
+  data: T;
+  message: string;
+}
+
+const TIME_OUT = 10000; // 超时时间
+
+const fetchHandle = async <T = any>(url: string, method: 'POST' | 'GET', params: any) => {
   const headers = {
     'Content-Type': 'application/json;charset=UTF-8',
     Accept: 'application/json',
@@ -10,18 +22,48 @@ const fetchHandle = async (url: string, method: 'POST' | 'GET', data: any) => {
     headers,
   };
   if (method === 'GET') {
-    url = url + '?' + qs.stringify(data);
+    url = url + '?' + qs.stringify(params);
   }
   if (method === 'POST') {
-    options.body = JSON.stringify(data);
+    options.body = JSON.stringify(params);
   }
 
-  const response = await fetch(`/api/${url}`, options);
-  console.log(await response.json());
-  return response;
+  const response = await Promise.race([
+    new Promise<Response<T>>((resolve, reject) => {
+      setTimeout(() => {
+        resolve({
+          code: ResponseCode.timeout,
+          message: '请求超时',
+          data: null as any,
+        });
+      }, TIME_OUT);
+    }),
+    new Promise<Response<T>>((resolve, reject) => {
+      fetch(`/api/${url}`, options).then(
+        async (responseJson) => {
+          resolve(await responseJson.json());
+        },
+        (error) => {
+          reject(error);
+        },
+      );
+    }),
+  ]);
+
+  const { code, data, message } = response;
+
+  let err = false;
+  if (code !== ResponseCode.success) {
+    Toast.show({
+      icon: 'fail',
+      content: message || '系统错误',
+    });
+    err = true;
+  }
+  return { err, code, data };
 };
 
-const postHandle = (url: string, data: any) => fetchHandle(url, 'POST', data);
-const getHandle = (url: string, data: any) => fetchHandle(url, 'GET', data);
+const postHandle = <T>(url: string, data: any) => fetchHandle<T>(url, 'POST', data);
+const getHandle = <T>(url: string, data: any) => fetchHandle<T>(url, 'GET', data);
 
 export { getHandle, postHandle };
