@@ -14,6 +14,7 @@ const OutMain = () => {
     isShowTabBar,
   } = useContext(ContextData);
   const navigate = useNavigate();
+
   return (
     <>
       <NavBar

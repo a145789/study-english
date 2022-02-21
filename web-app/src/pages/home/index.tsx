@@ -21,7 +21,7 @@ const Home: FC = () => {
         ),
       },
     });
-  }, []);
+  }, [isLogin]);
   return (
     <div>
       1212

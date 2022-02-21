@@ -9,9 +9,14 @@ interface Response<T> {
   message: string;
 }
 
-const TIME_OUT = 10000; // 超时时间
+const TIME_OUT = 6500; // 超时时间
 
-const fetchHandle = async <T = any>(url: string, method: 'POST' | 'GET', params: any) => {
+const fetchHandle = async <T = any>(
+  url: string,
+  method: 'POST' | 'GET',
+  params: any,
+  rejectCb?: () => void,
+) => {
   const headers = {
     'Content-Type': 'application/json;charset=UTF-8',
     Accept: 'application/json',
@@ -59,11 +64,14 @@ const fetchHandle = async <T = any>(url: string, method: 'POST' | 'GET', params:
       content: message || '系统错误',
     });
     err = true;
+    rejectCb && rejectCb();
   }
   return { err, code, data };
 };
 
-const postHandle = <T>(url: string, data: any) => fetchHandle<T>(url, 'POST', data);
-const getHandle = <T>(url: string, data: any) => fetchHandle<T>(url, 'GET', data);
+const postHandle = <T>(url: string, data: any, rejectCb?: () => void) =>
+  fetchHandle<T>(url, 'POST', data, rejectCb);
+const getHandle = <T>(url: string, data: any, rejectCb?: () => void) =>
+  fetchHandle<T>(url, 'GET', data, rejectCb);
 
 export { getHandle, postHandle };
