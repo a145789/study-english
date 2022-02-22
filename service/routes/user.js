@@ -5,18 +5,16 @@ const {
   UserMong: { UserModel }
 } = require('../db/modules/user')
 
-const checkEmailCode = async (email, emailCode, ctx) => {
+const checkEmailCode = async (email, emailCode) => {
   const emailCodeDb = await EmailCodeModel.findOne({ email })
   if (emailCodeDb?.emailCode !== emailCode) {
-    ctx.body = {
+    return {
       code: 0,
       message: '验证码错误',
       data: null
     }
-    return false
   }
-  await EmailCodeModel.deleteOne({ email })
-  return true
+  EmailCodeModel.deleteOne({ email }, function() {})
 }
 
 router.get('/api/getEmailCode', async (ctx, next) => {
@@ -69,8 +67,11 @@ router.post('/api/register', async (ctx, next) => {
   try {
     const { username, password, email, emailCode } = ctx.request.body
 
-    const bol = await checkEmailCode(email, emailCode, ctx)
-    if (!bol) return
+    const result = await checkEmailCode(email, emailCode)
+    if (result) {
+      ctx.body = result
+      return
+    }
     const userDb = await UserModel.findOne({ username })
     if (userDb) {
       ctx.body = {
@@ -115,8 +116,11 @@ router.post('/api/login', async (ctx, next) => {
         return
       }
     } else {
-      const bol = await checkEmailCode(email, emailCode, ctx)
-      if (!bol) return
+      const result = await checkEmailCode(email, emailCode)
+      if (result) {
+        ctx.body = result
+        return
+      }
     }
     ctx.body = {
       code: 200,
