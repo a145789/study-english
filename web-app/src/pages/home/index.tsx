@@ -9,19 +9,6 @@ const Home: FC = () => {
   const { navBar, isLogin, dispatch } = useContext(ContextData);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    dispatch({
-      type: 'navBar',
-      payload: {
-        ...navBar,
-        right: (
-          <Button color="primary" fill="none" onClick={() => navigate('/login')}>
-            {isLogin ? '退出' : '登录'}
-          </Button>
-        ),
-      },
-    });
-  }, [isLogin]);
   return (
     <div>
       1212

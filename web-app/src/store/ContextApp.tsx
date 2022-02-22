@@ -1,3 +1,4 @@
+import Cookies from 'js-cookie';
 import React, { createContext, FC, ReactNode, useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,6 +19,11 @@ interface ContextStateType {
   isLoading: boolean;
   isShowTabBar: boolean;
   isLogin: boolean;
+  userInfo: {
+    userId: string;
+    username: string;
+    email: string;
+  } | null;
   dispatch: (action: ActionType<Omit<ContextStateType, 'dispatch'>>) => void;
 }
 
@@ -36,6 +42,13 @@ function reducer(
       return { ...state, isShowTabBar: action.payload };
     case 'isLogin':
       return { ...state, isLogin: action.payload };
+    case 'userInfo':
+      if (action.payload) {
+        Cookies.set('userInfo', JSON.stringify(action.payload), {
+          maxAge: 60 * 60 * 24 * 7,
+        });
+      }
+      return { ...state, userInfo: action.payload };
     default:
       return state;
   }
@@ -43,6 +56,9 @@ function reducer(
 
 const ContextApp: FC = ({ children }) => {
   const navigate = useNavigate();
+  console.log(
+    Cookies.get('userInfo') !== undefined || Cookies.get('userInfo') !== 'null',
+  );
   const [state, dispatch] = useReducer(reducer, {
     navBar: {
       title: '学英语',
@@ -53,8 +69,9 @@ const ContextApp: FC = ({ children }) => {
       },
     },
     isLoading: false,
-    isLogin: false,
+    isLogin: Boolean(JSON.parse(Cookies.get('userInfo') || 'null')),
     isShowTabBar: true,
+    userInfo: null,
   });
 
   return (

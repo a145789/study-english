@@ -11,6 +11,7 @@
   "dependencies": {
     "antd-mobile": "^5.0.0-rc.12",
     "antd-mobile-icons": "^0.2.2",
+    "js-cookie": "^3.0.1",
     "md5-typescript": "^1.0.5",
     "qs": "^6.10.3",
     "react": "^17.0.0",

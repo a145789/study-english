@@ -14,10 +14,11 @@ const UserSchema = Schema({
   phone: { type: String },
   createTime: { type: Date, default: Date.now },
   updateTime: { type: Date, default: Date.now },
-  unfamiliar: { type: [mongoose.Schema.Types.ObjectId], default: [] },
-  familiar: { type: [mongoose.Schema.Types.ObjectId], default: [] },
-  will: { type: [mongoose.Schema.Types.ObjectId], default: [] },
-  mastered: { type: [mongoose.Schema.Types.ObjectId], default: [] }
+  unfamiliar: { type: [Schema.Types.ObjectId], default: [] },
+  familiar: { type: [Schema.Types.ObjectId], default: [] },
+  will: { type: [Schema.Types.ObjectId], default: [] },
+  mastered: { type: [Schema.Types.ObjectId], default: [] },
+  sessionId: { type: String }
 })
 
 const UserModel = model('user', UserSchema)

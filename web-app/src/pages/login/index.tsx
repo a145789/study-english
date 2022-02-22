@@ -74,7 +74,11 @@ const Login = () => {
       case CertificationProcess.login: {
         const params = { ...values, isUseCodeLogin };
         !isUseCodeLogin && (params.password = Md5.init(values.password));
-        const { err } = await postHandle('login', params, cancelLoading);
+        const { err, data } = await postHandle<{
+          userId: string;
+          username: string;
+          email: string;
+        }>('login', params, cancelLoading);
         if (err) {
           return;
         }
@@ -83,6 +87,7 @@ const Login = () => {
           icon: 'success',
           content: '登录成功',
         });
+        dispatch({ type: 'userInfo', payload: data });
         dispatch({ type: 'isLogin', payload: true });
         navigate('/');
         break;

@@ -16,6 +16,7 @@ specifiers:
   eslint-plugin-prettier: ^4.0.0
   eslint-plugin-react: ^7.28.0
   eslint-plugin-simple-import-sort: ^7.0.0
+  js-cookie: ^3.0.1
   md5-typescript: ^1.0.5
   prettier: ^2.5.1
   qs: ^6.10.3
@@ -31,6 +32,7 @@ specifiers:
 dependencies:
   antd-mobile: registry.npmmirror.com/antd-mobile/5.0.0-rc.26_react-dom@17.0.2+react@17.0.2
   antd-mobile-icons: registry.npmmirror.com/antd-mobile-icons/0.2.2
+  js-cookie: registry.npmmirror.com/js-cookie/3.0.1
   md5-typescript: registry.npmmirror.com/md5-typescript/1.0.5
   qs: registry.npmmirror.com/qs/6.10.3
   react: registry.npmmirror.com/react/17.0.2
@@ -2404,6 +2406,13 @@ packages:
     resolution: {integrity: sha512-HvdH2LzI/EAZcUwA8+0nKNtWHqS+ZmijLA30RwZA0bo7ToCckjK5MkGhjED9KoRcXO6BaGI3I9UIzSA1FKFPOQ==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/js-cookie/-/js-cookie-2.2.1.tgz}
     name: js-cookie
     version: 2.2.1
+    dev: false
+
+  registry.npmmirror.com/js-cookie/3.0.1:
+    resolution: {integrity: sha512-+0rgsUXZu4ncpPxRL+lNEptWMOWl9etvPHc/koSRp6MPwpRYAhmk0dUG00J4bxVV3r9uUzfo24wW0knS07SKSw==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/js-cookie/-/js-cookie-3.0.1.tgz}
+    name: js-cookie
+    version: 3.0.1
+    engines: {node: '>=12'}
     dev: false
 
   registry.npmmirror.com/js-tokens/4.0.0:

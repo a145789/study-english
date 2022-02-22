@@ -4,6 +4,8 @@ const {
   emailCodeMong: { EmailCodeModel },
   UserMong: { UserModel }
 } = require('../db/modules/user')
+const crypto = require('crypto')
+const shaKey = 'LoveAba'
 
 const checkEmailCode = async (email, emailCode) => {
   const emailCodeDb = await EmailCodeModel.findOne({ email })
@@ -14,7 +16,7 @@ const checkEmailCode = async (email, emailCode) => {
       data: null
     }
   }
-  EmailCodeModel.deleteOne({ email }, function() {})
+  EmailCodeModel.deleteOne({ email }, function () {})
 }
 
 router.get('/api/getEmailCode', async (ctx, next) => {
@@ -67,9 +69,9 @@ router.post('/api/register', async (ctx, next) => {
   try {
     const { username, password, email, emailCode } = ctx.request.body
 
-    const result = await checkEmailCode(email, emailCode)
-    if (result) {
-      ctx.body = result
+    const errBody = await checkEmailCode(email, emailCode)
+    if (errBody) {
+      ctx.body = errBody
       return
     }
     const userDb = await UserModel.findOne({ username })
@@ -101,10 +103,11 @@ router.post('/api/login', async (ctx, next) => {
   try {
     const { username, password, email, emailCode, isUseCodeLogin } =
       ctx.request.body
+    let user
     if (!isUseCodeLogin) {
       const isEmail =
         /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/.test(username)
-      const user = await UserModel.findOne(
+      user = await UserModel.findOne(
         isEmail ? { $or: [{ username }, { email: username }] } : { username }
       )
       if (user?.password !== password) {
@@ -116,12 +119,61 @@ router.post('/api/login', async (ctx, next) => {
         return
       }
     } else {
-      const result = await checkEmailCode(email, emailCode)
-      if (result) {
-        ctx.body = result
+      const errBody = await checkEmailCode(email, emailCode)
+      if (errBody) {
+        ctx.body = errBody
         return
       }
     }
+
+    if (!user) {
+      await UserModel.findOne({ email })
+    }
+
+    // 设置session
+    const sessionId = crypto
+      .createHash('sha256', user._id + shaKey)
+      .digest('hex')
+
+    await UserModel.updateOne(
+      { _id: user._id },
+      { sessionId, updateTime: Date.now() }
+    )
+    ctx.cookies.set('session', sessionId, {
+      path: '/', // 有效范围
+      httpOnly: true, // 只能在服务器修改
+      maxAge: 24 * 60 * 60 * 7
+    })
+    ctx.body = {
+      code: 200,
+      data: {
+        username: user.username,
+        userId: user._id,
+        email: user.email
+      }
+    }
+  } catch (error) {
+    console.log(error)
+    ctx.body = {
+      code: 0,
+      message: '网络错误',
+      data: null
+    }
+  }
+})
+
+router.post('/api/logout', async (ctx, next) => {
+  try {
+    const { userId } = ctx.request.body
+    await UserModel.updateOne(
+      { _id: userId },
+      { sessionId: '', updateTime: Date.now() }
+    )
+    ctx.cookies.set('session', '', {
+      path: '/', // 有效范围
+      httpOnly: true, // 只能在服务器修改
+      maxAge: 0
+    })
     ctx.body = {
       code: 200,
       data: null
