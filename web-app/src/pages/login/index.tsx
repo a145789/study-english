@@ -138,7 +138,7 @@ const Login = () => {
     }
 
     dispatch({ type: 'isLoading', payload: true });
-    const { err } = await getHandle(
+    const { err } = await postHandle(
       'getEmailCode',
       { email, isUseCodeLogin },
       cancelLoading,
