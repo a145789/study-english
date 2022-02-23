@@ -19,9 +19,9 @@ const checkEmailCode = async (email, emailCode) => {
   EmailCodeModel.deleteOne({ email }, function () {})
 }
 
-router.get('/api/getEmailCode', async (ctx, next) => {
+router.post('/api/getEmailCode', async (ctx, next) => {
   try {
-    const { email, isUseCodeLogin } = ctx.query
+    const { email, isUseCodeLogin } = ctx.request.body
     const user = await UserModel.findOne({ email })
     if (!isUseCodeLogin && user) {
       ctx.body = {
