@@ -9,14 +9,22 @@ interface Response<T> {
   message: string;
 }
 
+interface CallBackType<T> {
+  beforeCb?: () => void;
+  resolveCb?: (data: T) => void;
+  rejectCb?: () => void;
+}
+
 const TIME_OUT = 6500; // 超时时间
 
 const fetchHandle = async <T = any>(
   url: string,
   method: 'POST' | 'GET',
   params: any,
-  rejectCb?: () => void,
+  callback?: CallBackType<T>,
 ) => {
+  const { beforeCb, resolveCb, rejectCb } = callback || {};
+  beforeCb?.();
   const headers = {
     'Content-Type': 'application/json;charset=UTF-8',
     Accept: 'application/json',
@@ -64,14 +72,17 @@ const fetchHandle = async <T = any>(
       content: message || '系统错误',
     });
     err = true;
-    rejectCb && rejectCb();
+    rejectCb?.();
+  }
+  if (!err) {
+    resolveCb?.(data);
   }
   return { err, code, data };
 };
 
-const postHandle = <T>(url: string, data: any, rejectCb?: () => void) =>
-  fetchHandle<T>(url, 'POST', data, rejectCb);
-const getHandle = <T>(url: string, data: any, rejectCb?: () => void) =>
-  fetchHandle<T>(url, 'GET', data, rejectCb);
+const postHandle = <T>(url: string, data: any, callback?: CallBackType<T>) =>
+  fetchHandle<T>(url, 'POST', data, callback);
+const getHandle = <T>(url: string, data: any, callback?: CallBackType<T>) =>
+  fetchHandle<T>(url, 'GET', data, callback);
 
 export { getHandle, postHandle };

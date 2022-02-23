@@ -45,7 +45,7 @@ function reducer(
     case 'userInfo':
       if (action.payload) {
         Cookies.set('userInfo', JSON.stringify(action.payload), {
-          maxAge: 60 * 60 * 24 * 7,
+          expires: 7,
         });
       }
       return { ...state, userInfo: action.payload };
@@ -56,9 +56,7 @@ function reducer(
 
 const ContextApp: FC = ({ children }) => {
   const navigate = useNavigate();
-  console.log(
-    Cookies.get('userInfo') !== undefined || Cookies.get('userInfo') !== 'null',
-  );
+
   const [state, dispatch] = useReducer(reducer, {
     navBar: {
       title: '学英语',
@@ -71,7 +69,7 @@ const ContextApp: FC = ({ children }) => {
     isLoading: false,
     isLogin: Boolean(JSON.parse(Cookies.get('userInfo') || 'null')),
     isShowTabBar: true,
-    userInfo: null,
+    userInfo: JSON.parse(Cookies.get('userInfo') || 'null'),
   });
 
   return (

@@ -2,15 +2,16 @@ import { Button, Form, Input, Toast } from 'antd-mobile';
 import { Md5 } from 'md5-typescript';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
-const { Item: FormItem } = Form;
-const { show: ToastShow } = Toast;
 import { useNavigate } from 'react-router-dom';
 
 import { CertificationProcess } from '../../constants';
 import { ContextData } from '../../store/ContextApp';
-import { getHandle, postHandle } from '../../utils/fetch';
+import { getLoadingCb } from '../../utils';
+import { postHandle } from '../../utils/fetch';
 import classes from './index.module.css';
+
+const { Item: FormItem } = Form;
+const { show: ToastShow } = Toast;
 
 const enum CodeStatus {
   send,
@@ -66,10 +67,9 @@ const Login = () => {
 
   const codeTimer = useRef<number>(0);
 
-  const cancelLoading = () => dispatch({ type: 'isLoading', payload: false });
+  const loadingCb = getLoadingCb(dispatch);
 
   const submit = async (values: any) => {
-    dispatch({ type: 'isLoading', payload: true });
     switch (certificationProcess) {
       case CertificationProcess.login: {
         const params = { ...values, isUseCodeLogin };
@@ -78,7 +78,7 @@ const Login = () => {
           userId: string;
           username: string;
           email: string;
-        }>('login', params, cancelLoading);
+        }>('login', params, loadingCb);
         if (err) {
           return;
         }
@@ -96,7 +96,7 @@ const Login = () => {
         const { err } = await postHandle('register', {
           ...values,
           password: Md5.init(values.password),
-          cancelLoading,
+          loadingCb,
         });
         if (err) {
           return;
@@ -116,7 +116,6 @@ const Login = () => {
       default:
         break;
     }
-    dispatch({ type: 'isLoading', payload: false });
   };
 
   const sendCode = async () => {
@@ -137,17 +136,15 @@ const Login = () => {
       return;
     }
 
-    dispatch({ type: 'isLoading', payload: true });
     const { err } = await postHandle(
       'getEmailCode',
       { email, isUseCodeLogin },
-      cancelLoading,
+      loadingCb,
     );
     if (err) {
       return;
     }
 
-    dispatch({ type: 'isLoading', payload: false });
     setCodeStatus(CodeStatus.pending);
   };
 
@@ -193,9 +190,11 @@ const Login = () => {
       default:
         break;
     }
-    setIsUseCodeLogin(false);
-    form.resetFields();
   }, [certificationProcess]);
+
+  useEffect(() => {
+    form.resetFields();
+  }, [certificationProcess, isUseCodeLogin]);
 
   useEffect(() => {
     if (codeStatus !== CodeStatus.pending) {
@@ -290,7 +289,7 @@ const Login = () => {
         <Input placeholder="请输入" type="number" />
       </FormItem>
     ),
-    [codeStatus, codePendingNum],
+    [isUseCodeLogin, codeStatus, codePendingNum],
   );
 
   const formEle = useMemo(() => {

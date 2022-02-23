@@ -21,4 +21,17 @@ const sendEmail = (email, emailCode) => {
   return transporter.sendMail(mailOptions)
 }
 
-module.exports = { sendEmail }
+const responseCatch = async (ctx, cb) => {
+  try {
+    await cb()
+  } catch (error) {
+    console.log(error)
+    ctx.body = {
+      code: 0,
+      message: '后台错误',
+      data: null
+    }
+  }
+}
+
+module.exports = { sendEmail, responseCatch }

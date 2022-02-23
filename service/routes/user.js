@@ -1,5 +1,5 @@
 const router = require('koa-router')()
-const { sendEmail } = require('../utils/index')
+const { sendEmail, responseCatch } = require('../utils/index')
 const {
   emailCodeMong: { EmailCodeModel },
   UserMong: { UserModel }
@@ -20,7 +20,7 @@ const checkEmailCode = async (email, emailCode) => {
 }
 
 router.post('/api/getEmailCode', async (ctx, next) => {
-  try {
+  await responseCatch(ctx, async () => {
     const { email, isUseCodeLogin } = ctx.request.body
     const user = await UserModel.findOne({ email })
     if (!isUseCodeLogin && user) {
@@ -55,18 +55,11 @@ router.post('/api/getEmailCode', async (ctx, next) => {
       code: 200,
       data: null
     }
-  } catch (error) {
-    console.log(error)
-    ctx.body = {
-      code: 0,
-      message: '网络错误',
-      data: null
-    }
-  }
+  })
 })
 
 router.post('/api/register', async (ctx, next) => {
-  try {
+  await responseCatch(ctx, async () => {
     const { username, password, email, emailCode } = ctx.request.body
 
     const errBody = await checkEmailCode(email, emailCode)
@@ -89,18 +82,11 @@ router.post('/api/register', async (ctx, next) => {
       code: 200,
       data: null
     }
-  } catch (error) {
-    console.log(error)
-    ctx.body = {
-      code: 0,
-      message: '网络错误',
-      data: null
-    }
-  }
+  })
 })
 
 router.post('/api/login', async (ctx, next) => {
-  try {
+  await responseCatch(ctx, async () => {
     const { username, password, email, emailCode, isUseCodeLogin } =
       ctx.request.body
     let user
@@ -152,18 +138,11 @@ router.post('/api/login', async (ctx, next) => {
         email: user.email
       }
     }
-  } catch (error) {
-    console.log(error)
-    ctx.body = {
-      code: 0,
-      message: '网络错误',
-      data: null
-    }
-  }
+  })
 })
 
 router.post('/api/logout', async (ctx, next) => {
-  try {
+  await responseCatch(ctx, async () => {
     const { userId } = ctx.request.body
     await UserModel.updateOne(
       { _id: userId },
@@ -178,14 +157,7 @@ router.post('/api/logout', async (ctx, next) => {
       code: 200,
       data: null
     }
-  } catch (error) {
-    console.log(error)
-    ctx.body = {
-      code: 0,
-      message: '网络错误',
-      data: null
-    }
-  }
+  })
 })
 
 module.exports = router

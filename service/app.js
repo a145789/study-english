@@ -17,9 +17,8 @@ const imgExt = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']
 
 // error handler
 onerror(app)
-
+mongodb()
 // middlewares
-app.use(mongodb())
 app.use(
   bodyparser({
     enableTypes: ['json', 'form', 'text']
