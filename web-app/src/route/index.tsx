@@ -1,17 +1,18 @@
-import { DotLoading } from 'antd-mobile';
+import { SpinLoading } from 'antd-mobile';
 import React, { FC, lazy, Suspense, useMemo } from 'react';
 import { useRoutes } from 'react-router-dom';
 
 const Home = lazy(() => import('../pages/home'));
-const List = lazy(() => import('../pages/list'));
+const LearnEnglish = lazy(() => import('../pages/learn-english'));
 const Login = lazy(() => import('../pages/login'));
+const Word = lazy(() => import('../pages/word'));
 import OutMain from '../pages/out-main';
 
 const Route: FC = () => {
   const dotLoading = useMemo(
     () => (
       <div className="wait_loading">
-        <DotLoading />
+        <SpinLoading color="primary" />
       </div>
     ),
     [],
@@ -37,10 +38,18 @@ const Route: FC = () => {
           ),
         },
         {
-          path: 'list',
+          path: 'learn-english',
           element: (
             <Suspense fallback={dotLoading}>
-              <List />
+              <LearnEnglish />
+            </Suspense>
+          ),
+        },
+        {
+          path: 'word/:type/:id',
+          element: (
+            <Suspense fallback={dotLoading}>
+              <Word />
             </Suspense>
           ),
         },

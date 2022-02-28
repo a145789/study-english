@@ -5,8 +5,8 @@ import React, { memo, useContext, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 
 import { ContextData } from '../../store/ContextApp';
-import { getLoadingCb } from '../../utils';
 import { postHandle } from '../../utils/fetch';
+import { useLoadingCb } from '../../utils/hooks';
 import classes from './index.module.css';
 
 const { Item: TabBarItem } = TabBar;
@@ -32,7 +32,7 @@ function MainNavBar() {
   } = useContext(ContextData);
   const navigate = useNavigate();
 
-  const loadingCb = getLoadingCb(dispatch);
+  const loadingCb = useLoadingCb();
 
   const logHandle = async () => {
     const userInfo = JSON.parse(Cookies.get('userInfo') || 'null');

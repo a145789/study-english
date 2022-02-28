@@ -6,8 +6,8 @@ import { useNavigate } from 'react-router-dom';
 
 import { CertificationProcess } from '../../constants';
 import { ContextData } from '../../store/ContextApp';
-import { getLoadingCb } from '../../utils';
 import { postHandle } from '../../utils/fetch';
+import { useLoadingCb } from '../../utils/hooks';
 import classes from './index.module.css';
 
 const { Item: FormItem } = Form;
@@ -67,7 +67,7 @@ const Login = () => {
 
   const codeTimer = useRef<number>(0);
 
-  const loadingCb = getLoadingCb(dispatch);
+  const loadingCb = useLoadingCb();
 
   const submit = async (values: any) => {
     switch (certificationProcess) {
@@ -89,7 +89,7 @@ const Login = () => {
         });
         dispatch({ type: 'userInfo', payload: data });
         dispatch({ type: 'isLogin', payload: true });
-        navigate('/');
+        navigate('/', { replace: true });
         break;
       }
       case CertificationProcess.register: {

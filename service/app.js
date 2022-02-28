@@ -12,6 +12,7 @@ const mongodb = require('./db/index')
 
 const index = require('./routes/index')
 const user = require('./routes/user')
+const word = require('./routes/word')
 
 const imgExt = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']
 
@@ -58,6 +59,7 @@ app.use(async (ctx, next) => {
 // routes
 app.use(index.routes(), index.allowedMethods())
 app.use(user.routes(), user.allowedMethods())
+app.use(word.routes(), word.allowedMethods())
 
 // error-handling
 app.on('error', (err, ctx) => {

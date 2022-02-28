@@ -1,6 +1,7 @@
 .center {
   background: rgb(245, 247, 250);
   flex: 1;
+  overflow: hidden;
 }
 
 .nav_bar {

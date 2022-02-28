@@ -1,7 +1,7 @@
 const router = require('koa-router')()
 const { sendEmail, responseCatch } = require('../utils/index')
 const {
-  emailCodeMong: { EmailCodeModel },
+  EmailCodeMong: { EmailCodeModel },
   UserMong: { UserModel }
 } = require('../db/modules/user')
 const crypto = require('crypto')

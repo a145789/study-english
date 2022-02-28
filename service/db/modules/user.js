@@ -5,7 +5,7 @@ const EmailCodeSchema = new Schema({
   email: { type: String, required: true },
   emailCode: { type: String, required: true }
 })
-EmailCodeModel = model('email_code', EmailCodeSchema)
+const EmailCodeModel = model('email_code', EmailCodeSchema)
 
 const UserSchema = Schema({
   username: { type: String, required: true },
@@ -24,6 +24,6 @@ const UserSchema = Schema({
 const UserModel = model('user', UserSchema)
 
 module.exports = {
-  emailCodeMong: { EmailCodeSchema, EmailCodeModel },
+  EmailCodeMong: { EmailCodeSchema, EmailCodeModel },
   UserMong: { UserSchema, UserModel }
 }

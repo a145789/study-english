@@ -20,7 +20,7 @@ const TIME_OUT = 6500; // 超时时间
 const fetchHandle = async <T = any>(
   url: string,
   method: 'POST' | 'GET',
-  params: any,
+  params?: any,
   callback?: CallBackType<T>,
 ) => {
   const { beforeCb, resolveCb, rejectCb } = callback || {};
@@ -34,10 +34,10 @@ const fetchHandle = async <T = any>(
     method,
     headers,
   };
-  if (method === 'GET') {
+  if (params && method === 'GET') {
     url = url + '?' + qs.stringify(params);
   }
-  if (method === 'POST') {
+  if (params && method === 'POST') {
     options.body = JSON.stringify(params);
   }
 
@@ -80,9 +80,9 @@ const fetchHandle = async <T = any>(
   return { err, code, data };
 };
 
-const postHandle = <T>(url: string, data: any, callback?: CallBackType<T>) =>
+const postHandle = <T>(url: string, data?: any, callback?: CallBackType<T>) =>
   fetchHandle<T>(url, 'POST', data, callback);
-const getHandle = <T>(url: string, data: any, callback?: CallBackType<T>) =>
+const getHandle = <T>(url: string, data?: any, callback?: CallBackType<T>) =>
   fetchHandle<T>(url, 'GET', data, callback);
 
 export { getHandle, postHandle };
