@@ -25,7 +25,7 @@ router.get('/api/word_list', async (ctx, next) => {
   await responseCatch(ctx, async () => {
     const { id } = ctx.query
     console.log(id)
-    const data = await WordModel.find({ _id: id }, { word: 1 })
+    const data = await WordModel.find({ type: { $in: [id] } }, { word: 1 })
 
     ctx.body = {
       code: 200,
