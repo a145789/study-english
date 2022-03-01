@@ -1,4 +1,5 @@
 import { Toast } from 'antd-mobile';
+import Cookies from 'js-cookie';
 import qs from 'qs';
 
 import { ResponseCode } from '../constants';
@@ -28,6 +29,7 @@ const fetchHandle = async <T = any>(
   const headers = {
     'Content-Type': 'application/json;charset=UTF-8',
     Accept: 'application/json',
+    credentials: 'same-origin',
   };
 
   const options: { [key: string]: any } = {

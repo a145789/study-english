@@ -1,4 +1,5 @@
-import { Empty, List, Tabs } from 'antd-mobile';
+import { Empty, FloatingBubble, List, Tabs } from 'antd-mobile';
+import { MessageFill } from 'antd-mobile-icons';
 import React, { FC, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -30,45 +31,50 @@ const Word: FC = () => {
   const [list, setList] = useState<WordList[]>([]);
   const [wordStatus, setWordStatus] = useState<WordStatus>(WordStatus.unfamiliar);
 
-  const unLoginOrUnFirst = !isLogin && wordStatus !== WordStatus.unfamiliar;
+  const unLoginAndUnFirst = !isLogin && wordStatus !== WordStatus.unfamiliar;
 
   const getWordList = async () => {
-    const { data, err } = await getHandle<WordList[]>('word_list', { id }, loadingCb);
+    const { data, err } = await getHandle<WordList[]>(
+      'word_list',
+      { id, wordStatus },
+      loadingCb,
+    );
     if (err) {
       return;
     }
     setList(data);
   };
-  const tabChange = (wordStatus: WordStatus) => {
-    setWordStatus(wordStatus);
-    console.log(1);
 
-    if (!unLoginOrUnFirst) {
+  useEffect(() => {
+    if (!unLoginAndUnFirst) {
       getWordList();
     }
-  };
-
+  }, [wordStatus]);
   useEffect(() => {
     dispatch({
       type: 'navBar',
       payload: { ...navBar, title: '背单词', backArrow: true },
     });
-    getWordList();
+    if (!isLogin) {
+      getWordList();
+    }
   }, []);
   return (
     <div className={classes.list_main}>
-      <Tabs activeKey={wordStatus} onChange={(active) => tabChange(active as WordStatus)}>
+      <Tabs
+        activeKey={wordStatus}
+        onChange={(active) => setWordStatus(active as WordStatus)}>
         <Tab title="不认识" key={WordStatus.unfamiliar} />
         <Tab title="不熟悉" key={WordStatus.will} />
         <Tab title="已了解" key={WordStatus.mastered} />
         <Tab title="早就认识" key={WordStatus.familiar} />
       </Tabs>
       <div className={classes.list}>
-        {unLoginOrUnFirst || !list.length ? (
+        {unLoginAndUnFirst || !list.length ? (
           <Empty
             className={classes.empty}
             imageStyle={{ width: 128 }}
-            description={unLoginOrUnFirst ? '登录后使用该功能' : '暂无数据'}
+            description={unLoginAndUnFirst ? '登录后使用该功能' : '暂无数据'}
           />
         ) : (
           <List>
@@ -78,6 +84,14 @@ const Word: FC = () => {
           </List>
         )}
       </div>
+      <FloatingBubble
+        style={{
+          '--initial-position-bottom': '24px',
+          '--initial-position-right': '24px',
+          // '--edge-distance': '24px',
+        }}>
+        <MessageFill fontSize={32} />
+      </FloatingBubble>
     </div>
   );
 };
