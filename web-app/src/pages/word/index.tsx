@@ -1,5 +1,13 @@
-import { Empty, FloatingBubble, List, Tabs } from 'antd-mobile';
-import { MessageFill } from 'antd-mobile-icons';
+import {
+  Dialog,
+  Dropdown,
+  Empty,
+  FloatingBubble,
+  List,
+  Radio,
+  Space,
+  Tabs,
+} from 'antd-mobile';
 import React, { FC, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -9,10 +17,12 @@ import { useLoadingCb } from '../../utils/hooks';
 import classes from './index.module.css';
 
 const { Item: ListItem } = List;
+const { Item: DropdownItem } = Dropdown;
+const { Group: RadioGroup } = Radio;
 const { Tab } = Tabs;
 
 type WordList = {
-  id: string;
+  _id: string;
   word: string;
 };
 
@@ -26,17 +36,19 @@ const enum WordStatus {
 const Word: FC = () => {
   const { navBar, isLogin, dispatch } = useContext(ContextData);
   const loadingCb = useLoadingCb();
-  const { id, type } = useParams();
+  const { _id, type } = useParams();
 
   const [list, setList] = useState<WordList[]>([]);
   const [wordStatus, setWordStatus] = useState<WordStatus>(WordStatus.unfamiliar);
+  const [word, setWord] = useState<string>('');
+  const [wordVisible, setWordVisible] = useState(false);
 
   const unLoginAndUnFirst = !isLogin && wordStatus !== WordStatus.unfamiliar;
 
   const getWordList = async () => {
     const { data, err } = await getHandle<WordList[]>(
       'word_list',
-      { id, wordStatus },
+      { _id, wordStatus },
       loadingCb,
     );
     if (err) {
@@ -44,9 +56,13 @@ const Word: FC = () => {
     }
     setList(data);
   };
+  const showWordDia = () => {
+    setWordVisible(true);
+  };
+  const getWord = async () => {};
 
   useEffect(() => {
-    if (!unLoginAndUnFirst) {
+    if (isLogin) {
       getWordList();
     }
   }, [wordStatus]);
@@ -59,6 +75,7 @@ const Word: FC = () => {
       getWordList();
     }
   }, []);
+
   return (
     <div className={classes.list_main}>
       <Tabs
@@ -69,6 +86,22 @@ const Word: FC = () => {
         <Tab title="已了解" key={WordStatus.mastered} />
         <Tab title="早就认识" key={WordStatus.familiar} />
       </Tabs>
+      {/* <Dropdown>
+        <DropdownItem key="sorter" title="排序">
+          <div style={{ padding: 12 }}>
+            <RadioGroup defaultValue="default">
+              <Space direction="vertical" block>
+                <Radio block value="default">
+                  列表模式
+                </Radio>
+                <Radio block value="nearest">
+                  卡片模式
+                </Radio>
+              </Space>
+            </RadioGroup>
+          </div>
+        </DropdownItem>
+      </Dropdown> */}
       <div className={classes.list}>
         {unLoginAndUnFirst || !list.length ? (
           <Empty
@@ -78,20 +111,35 @@ const Word: FC = () => {
           />
         ) : (
           <List>
-            {list.map(({ id, word }) => (
-              <ListItem key={id}>{word}</ListItem>
+            {list.map(({ _id, word }) => (
+              <ListItem key={_id} onClick={() => showWordDia()}>
+                {word}
+              </ListItem>
             ))}
           </List>
         )}
       </div>
-      <FloatingBubble
-        style={{
-          '--initial-position-bottom': '24px',
-          '--initial-position-right': '24px',
-          // '--edge-distance': '24px',
-        }}>
-        <MessageFill fontSize={32} />
-      </FloatingBubble>
+      <Dialog
+        visible={wordVisible}
+        closeOnAction
+        content={
+          <>
+            <div>请用手机拍摄手持工牌照，注意保持照片清晰</div>
+            <div>
+              详情说明请查阅<a>操作指引</a>
+            </div>
+          </>
+        }
+        onClose={() => {
+          setWordVisible(false);
+        }}
+        actions={[
+          {
+            key: 'confirm',
+            text: '关闭',
+          },
+        ]}
+      />
     </div>
   );
 };

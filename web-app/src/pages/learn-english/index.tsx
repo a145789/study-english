@@ -9,7 +9,7 @@ import { useLoadingCb } from '../../utils/hooks';
 const { Item: ListItem } = List;
 
 type TypeList = {
-  id: string;
+  _id: string;
   name: string;
   type: string;
 };
@@ -38,11 +38,11 @@ const LearnEnglish: FC = () => {
   }, []);
   return (
     <List mode="card" header="单词库">
-      {list.map(({ id, name, type }) => (
+      {list.map(({ _id, name, type }) => (
         <ListItem
-          key={id}
+          key={_id}
           onClick={() => {
-            navigate(`/word/${type}/${id}`);
+            navigate(`/word/${type}/${_id}`);
           }}>
           {name}
         </ListItem>

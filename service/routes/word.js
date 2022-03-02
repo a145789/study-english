@@ -11,12 +11,7 @@ const {
 router.get('/api/word_type_list', async (ctx, next) => {
   await responseCatch(ctx, async () => {
     const wordTypeList = await WordTypeCodeModel.find({})
-    const data =
-      wordTypeList?.map(item => ({
-        id: item._id,
-        name: item.name,
-        type: item.type
-      })) || []
+    const data = wordTypeList || []
     ctx.body = {
       code: 200,
       data
@@ -26,7 +21,7 @@ router.get('/api/word_type_list', async (ctx, next) => {
 
 router.get('/api/word_list', async (ctx, next) => {
   await responseCatch(ctx, async () => {
-    const { id, wordStatus } = ctx.query
+    const { _id, wordStatus } = ctx.query
     const { userId } = ctx.userInfo
     let wordIdList = []
     if (userId) {
@@ -41,11 +36,18 @@ router.get('/api/word_list', async (ctx, next) => {
       )
     }
     const wordOptions = {
-      type: { $in: [id] }
+      type: { $in: [_id] }
     }
     if (wordIdList.length) {
       wordOptions._id =
         wordStatus === 'unfamiliar' ? { $nin: wordIdList } : { $in: wordIdList }
+    } else if (wordStatus !== 'unfamiliar') {
+      wordOptions._id = { $nin: [] }
+      ctx.body = {
+        code: 200,
+        data: []
+      }
+      return
     }
     const data = await WordModel.find(wordOptions, { word: 1 })
 
