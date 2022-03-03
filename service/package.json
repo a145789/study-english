@@ -23,6 +23,7 @@
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
     "mongoose": "^6.2.1",
+    "node-fetch": "2",
     "nodemailer": "^6.7.2"
   },
   "devDependencies": {

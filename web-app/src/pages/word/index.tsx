@@ -3,6 +3,7 @@ import {
   Dropdown,
   Empty,
   FloatingBubble,
+  InfiniteScroll,
   List,
   Radio,
   Space,
@@ -20,6 +21,23 @@ const { Item: ListItem } = List;
 const { Item: DropdownItem } = Dropdown;
 const { Group: RadioGroup } = Radio;
 const { Tab } = Tabs;
+
+type WordType = {
+  _id: string;
+  word: string;
+  /** 美式发音 */
+  americanPhonetic: string;
+  /** 英式发音 */
+  britishPhonetic: string;
+  /** 例句 */
+  sampleSentences: { en: string; cn: string }[];
+  /** 翻译1 */
+  translation_1: string;
+  /** 翻译2 */
+  translation_2: string;
+  /** 关联词 */
+  association: { word: String; translation: String }[];
+};
 
 type WordList = {
   _id: string;
@@ -40,8 +58,9 @@ const Word: FC = () => {
 
   const [list, setList] = useState<WordList[]>([]);
   const [wordStatus, setWordStatus] = useState<WordStatus>(WordStatus.unfamiliar);
-  const [word, setWord] = useState<string>('');
+  const [word, setWord] = useState({} as WordType);
   const [wordVisible, setWordVisible] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
 
   const unLoginAndUnFirst = !isLogin && wordStatus !== WordStatus.unfamiliar;
 
@@ -55,11 +74,20 @@ const Word: FC = () => {
       return;
     }
     setList(data);
+    // setHasMore(!data?.length);
   };
   const showWordDia = () => {
     setWordVisible(true);
   };
-  const getWord = async () => {};
+  const getWord = async (_id: string) => {
+    const { err, data } = await getHandle<WordType>('word', { _id }, loadingCb);
+    if (err) {
+      return;
+    }
+    console.log(data);
+    setWord(data);
+    showWordDia();
+  };
 
   useEffect(() => {
     if (isLogin) {
@@ -110,13 +138,16 @@ const Word: FC = () => {
             description={unLoginAndUnFirst ? '登录后使用该功能' : '暂无数据'}
           />
         ) : (
-          <List>
-            {list.map(({ _id, word }) => (
-              <ListItem key={_id} onClick={() => showWordDia()}>
-                {word}
-              </ListItem>
-            ))}
-          </List>
+          <>
+            <List>
+              {list.map(({ _id, word }) => (
+                <ListItem key={_id} onClick={() => getWord(_id)}>
+                  {word}
+                </ListItem>
+              ))}
+            </List>
+            <InfiniteScroll loadMore={getWordList} hasMore={hasMore} />
+          </>
         )}
       </div>
       <Dialog
@@ -124,10 +155,8 @@ const Word: FC = () => {
         closeOnAction
         content={
           <>
-            <div>请用手机拍摄手持工牌照，注意保持照片清晰</div>
-            <div>
-              详情说明请查阅<a>操作指引</a>
-            </div>
+            <div>单词：{word.word}</div>
+            <div>翻译：{word.translation_1}</div>
           </>
         }
         onClose={() => {
