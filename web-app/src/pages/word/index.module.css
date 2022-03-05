@@ -13,3 +13,22 @@
 .empty {
   padding: 100px 0 0;
 }
+
+.audio {
+  display: none;
+}
+
+.audio_active {
+  margin: 14px 0;
+  display: flex;
+  align-items: center;
+}
+.audio_active svg {
+  font-size: 22px;
+  margin-left: 8px;
+}
+
+.word_handle_space {
+  display: flex;
+  justify-content: center;
+}

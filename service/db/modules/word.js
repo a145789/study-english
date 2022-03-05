@@ -8,7 +8,7 @@ const WordTypeSchema = Schema({
 const WordTypeCodeModel = model('word_type', WordTypeSchema)
 
 const WordSchema = Schema({
-  type: { type: [mongoose.Schema.Types.ObjectId], default: [] },
+  type: { type: [Schema.Types.ObjectId], default: [] },
   word: { type: String, required: true },
   /** 美式发音 */
   americanPhonetic: { type: String },

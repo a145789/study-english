@@ -1,4 +1,5 @@
 const router = require('koa-router')()
+const mongoose = require('mongoose')
 const { responseCatch } = require('../utils/index')
 const fetch = require('node-fetch')
 const {
@@ -22,7 +23,9 @@ router.get('/api/word_type_list', async (ctx, next) => {
 
 router.get('/api/word_list', async (ctx, next) => {
   await responseCatch(ctx, async () => {
-    const { _id, wordStatus } = ctx.query
+    let { _id, wordStatus, skip = 0, limit = 30 } = ctx.query
+    skip = Number(skip)
+    limit = Number(limit)
     const { userId } = ctx.userInfo
     let wordIdList = []
     if (userId) {
@@ -37,26 +40,52 @@ router.get('/api/word_list', async (ctx, next) => {
       )
     }
     const wordOptions = {
-      type: { $in: [_id] }
+      type: { $in: [mongoose.Types.ObjectId(_id)] }
     }
     if (wordIdList.length) {
       wordOptions._id =
         wordStatus === 'unfamiliar' ? { $nin: wordIdList } : { $in: wordIdList }
     } else if (wordStatus !== 'unfamiliar') {
-      wordOptions._id = { $nin: [] }
       ctx.body = {
         code: 200,
         data: []
       }
       return
     }
-    const data = await WordModel.find(wordOptions, { word: 1 })
-      .skip(0)
-      .limit(15)
+    const wordList = await WordModel.aggregate([
+      {
+        $match: wordOptions
+      },
+      {
+        $project: {
+          word: 1
+        }
+      },
+      {
+        $facet: {
+          stage1: [{ $group: { _id: null, count: { $sum: 1 } } }],
+          stage2: [{ $skip: skip }, { $limit: limit }]
+        }
+      },
+      { $unwind: '$stage1' },
+      {
+        $project: {
+          count: '$stage1.count',
+          data: '$stage2'
+        }
+      }
+    ])
+
+    const [{ count, data: list }] = wordList
+    const nextSkip = skip + limit
 
     ctx.body = {
       code: 200,
-      data
+      data: {
+        hasMore: nextSkip < count,
+        skip: nextSkip,
+        list
+      }
     }
   })
 })
@@ -68,7 +97,7 @@ router.get('/api/word', async (ctx, next) => {
     let word = await WordModel.findOne({ _id }, { type: 0 })
 
     if (!word.americanPhonetic || !word.sampleSentences.length) {
-      await responseCatch(ctx, async () => {
+      try {
         const data = await fetch(
           `https://static2.youzack.com/youzack/bdc2/word_detail/924fa861-4c26-4cca-b091-21ac08bb9ab0/${word.word}.json`
         )
@@ -101,29 +130,36 @@ router.get('/api/word', async (ctx, next) => {
             fields: { type: 0 }
           }
         )
-      })
+      } catch (error) {
+        console.log(error)
+      }
     }
 
     if (!word.translation_2) {
-      await responseCatch(ctx, async () => {
-        const data = await fetch(
-          `https://dict.iciba.com/dictionary/word/suggestion?word=${word.word}&nums=5&ck=709a0db45332167b0e2ce1868b84773e&timestamp=1644479122751&client=6&uid=123123&key=1000006&is_need_mean=1&signature=16c1edde9369cbf38448b1a1acfe3191`
-        )
+      try {
+        {
+          const data = await fetch(
+            `https://dict.iciba.com/dictionary/word/suggestion?word=${word.word}&nums=5&ck=709a0db45332167b0e2ce1868b84773e&timestamp=1644479122751&client=6&uid=123123&key=1000006&is_need_mean=1&signature=16c1edde9369cbf38448b1a1acfe3191`
+          )
 
-        const { message, status = 0 } = await data.json()
+          const { message, status = 0 } = await data.json()
 
-        if (status !== 0) {
-          const [{ paraphrase: translation_2 }] = message.splice(0, 1)
-          if (message.length) {
-            const association = message.map(({ key, paraphrase }) => {
-              return {
-                word: key,
-                translation: paraphrase
-              }
-            })
+          if (status !== 0) {
+            const setOptions = {}
+            const [{ paraphrase: translation_2 = '' }] =
+              message.splice(0, 1) || []
+            setOptions.translation_2 = translation_2
+            if (message.length) {
+              setOptions.association = message.map(({ key, paraphrase }) => {
+                return {
+                  word: key,
+                  translation: paraphrase
+                }
+              })
+            }
             word = await WordModel.findOneAndUpdate(
               { _id },
-              { $set: { translation_2, association } },
+              { $set: setOptions },
               {
                 new: true,
                 fields: { type: 0 }
@@ -131,7 +167,9 @@ router.get('/api/word', async (ctx, next) => {
             )
           }
         }
-      })
+      } catch (error) {
+        console.log(error)
+      }
     }
 
     ctx.body = {
