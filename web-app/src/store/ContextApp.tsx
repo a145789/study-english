@@ -13,7 +13,7 @@ interface ContextStateType {
   navBar: {
     title: ReactNode;
     backArrow: ReactNode;
-    right: ReactNode;
+    right: boolean;
     onBack: () => void;
   };
   isLoading: boolean;
@@ -61,7 +61,7 @@ const ContextApp: FC = ({ children }) => {
     navBar: {
       title: '学英语',
       backArrow: null,
-      right: null,
+      right: false,
       onBack: () => {
         navigate(-1);
       },

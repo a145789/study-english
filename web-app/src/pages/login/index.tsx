@@ -160,7 +160,7 @@ const Login = () => {
             ...navBar,
             title: '登录',
             backArrow: true,
-            right: null,
+            right: false,
           },
         });
         break;
@@ -171,7 +171,7 @@ const Login = () => {
             ...navBar,
             title: '注册',
             backArrow: true,
-            right: null,
+            right: false,
           },
         });
         break;
@@ -182,7 +182,7 @@ const Login = () => {
             ...navBar,
             title: '修改密码',
             backArrow: true,
-            right: null,
+            right: false,
           },
         });
         break;
@@ -217,6 +217,13 @@ const Login = () => {
     dispatch({ type: 'isShowTabBar', payload: false });
     return () => {
       dispatch({ type: 'isShowTabBar', payload: true });
+      dispatch({
+        type: 'navBar',
+        payload: {
+          ...navBar,
+          right: true,
+        },
+      });
     };
   }, []);
 

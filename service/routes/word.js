@@ -26,7 +26,9 @@ router.get('/api/word_list', async (ctx, next) => {
     let { _id, wordStatus, skip = 0, limit = 30 } = ctx.query
     skip = Number(skip)
     limit = Number(limit)
-    const { userId } = ctx.userInfo
+    const {
+      userInfo: { userId }
+    } = ctx
     let wordIdList = []
     if (userId) {
       const showWordList =
@@ -175,6 +177,32 @@ router.get('/api/word', async (ctx, next) => {
     ctx.body = {
       code: 200,
       data: word
+    }
+  })
+})
+
+router.post('/api/word_handle', async (ctx, next) => {
+  await responseCatch(ctx, async () => {
+    const { _id, wordStatus, moveWordStatus } = ctx.request.body
+    const {
+      userInfo: { userId }
+    } = ctx
+
+    await UserModel.updateOne(
+      { _id: userId },
+      {
+        $push: {
+          [moveWordStatus]: _id
+        },
+        $pull: {
+          [wordStatus]: _id
+        }
+      }
+    )
+
+    ctx.body = {
+      code: 200,
+      data: null
     }
   })
 })

@@ -11,12 +11,13 @@ import {
   Space,
   Tabs,
 } from 'antd-mobile';
+import { Action } from 'antd-mobile/es/components/modal/modal-action-button';
 import { SoundOutline } from 'antd-mobile-icons';
-import React, { FC, useContext, useEffect, useRef, useState } from 'react';
+import React, { FC, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { ContextData } from '../../store/ContextApp';
-import { getHandle } from '../../utils/fetch';
+import { getHandle, postHandle } from '../../utils/fetch';
 import { useLoadingCb } from '../../utils/hooks';
 import classes from './index.module.css';
 
@@ -65,6 +66,12 @@ const enum AudioWordType {
   br,
 }
 
+const initWordStatus = () => ({
+  skip: 0,
+  limit: 18,
+  hasMore: false,
+});
+
 const Word: FC = () => {
   const { navBar, isLogin, dispatch } = useContext(ContextData);
   const loadingCb = useLoadingCb();
@@ -81,11 +88,8 @@ const Word: FC = () => {
     },
   );
   const [wordVisible, setWordVisible] = useState(false);
-  const [pageOptions, setPageOptions] = useState({
-    skip: 0,
-    limit: 18,
-    hasMore: true,
-  });
+  const [pageOptions, setPageOptions] = useState(initWordStatus());
+  const [diaButtonDisable, setDiaButtonDisable] = useState(false);
 
   const audioRef = useRef<{
     am: HTMLAudioElement | null;
@@ -115,7 +119,7 @@ const Word: FC = () => {
   };
   const getWord = async (index: number) => {
     setWordIndex({
-      preIndex: index - 1 < 0 ? null : index - 1,
+      preIndex: index === 0 ? null : index - 1,
       currentIndex: index,
       nextIndex: index + 1 === wordList.length ? null : index + 1,
     });
@@ -124,9 +128,11 @@ const Word: FC = () => {
     if (err) {
       return;
     }
-    console.log(data);
     setWord(data);
-    showWordDia();
+    setDiaButtonDisable(false);
+    if (!wordVisible) {
+      showWordDia();
+    }
   };
 
   const audioWordHandle = (type: AudioWordType) => {
@@ -136,6 +142,75 @@ const Word: FC = () => {
       audioRef.current.br?.play();
     }
   };
+  const wordHandle = async (type: WordStatus) => {
+    const { err } = await postHandle(
+      'word_handle',
+      {
+        _id: word._id,
+        wordStatus,
+        moveWordStatus: type,
+      },
+      {
+        beforeCb() {
+          setDiaButtonDisable(true);
+        },
+        resolveCb() {
+          setDiaButtonDisable(false);
+        },
+        rejectCb() {
+          setDiaButtonDisable(false);
+        },
+      },
+    );
+    if (err) {
+      return;
+    }
+
+    setPageOptions({
+      ...pageOptions,
+      skip: pageOptions.skip === 0 ? 0 : pageOptions.skip - 1,
+    });
+    wordList.splice(wordIndex.currentIndex, 1);
+    setWordList(wordList.slice());
+    getWord(wordIndex.currentIndex);
+  };
+  const tabChange = (active: string) => {
+    setWordList([]);
+    setPageOptions(initWordStatus());
+    setWordStatus(active as WordStatus);
+  };
+
+  const diaLogActions = useMemo(() => {
+    const actions: Action[] = [
+      {
+        key: 'confirm',
+        text: '关闭',
+      },
+    ];
+    if (wordIndex.preIndex !== null) {
+      actions.unshift({
+        key: 'pre',
+        text: '上一个',
+        disabled: diaButtonDisable,
+        onClick: () => {
+          setDiaButtonDisable(true);
+          getWord(wordIndex.preIndex!);
+        },
+      });
+    }
+    if (wordIndex.nextIndex !== null) {
+      actions.push({
+        key: 'next',
+        text: '下一个',
+        disabled: diaButtonDisable,
+        onClick: () => {
+          setDiaButtonDisable(true);
+          getWord(wordIndex.nextIndex!);
+        },
+      });
+    }
+    return actions;
+  }, [wordIndex, diaButtonDisable]);
 
   useEffect(() => {
     if (isLogin) {
@@ -170,9 +245,7 @@ const Word: FC = () => {
 
   return (
     <div className={classes.list_main}>
-      <Tabs
-        activeKey={wordStatus}
-        onChange={(active) => setWordStatus(active as WordStatus)}>
+      <Tabs activeKey={wordStatus} onChange={tabChange}>
         <Tab title="不认识" key={WordStatus.unfamiliar} />
         <Tab title="不熟悉" key={WordStatus.will} />
         <Tab title="已了解" key={WordStatus.mastered} />
@@ -268,22 +341,37 @@ const Word: FC = () => {
             <div className={classes.word_handle_space}>
               <Space wrap>
                 {wordStatus !== WordStatus.unfamiliar && (
-                  <Button color="danger" size="small">
+                  <Button
+                    color="danger"
+                    size="small"
+                    loading={diaButtonDisable}
+                    onClick={() => wordHandle(WordStatus.unfamiliar)}>
                     不认识
                   </Button>
                 )}
                 {wordStatus !== WordStatus.will && (
-                  <Button color="warning" size="small">
+                  <Button
+                    color="warning"
+                    size="small"
+                    loading={diaButtonDisable}
+                    onClick={() => wordHandle(WordStatus.will)}>
                     不熟悉
                   </Button>
                 )}
                 {wordStatus !== WordStatus.mastered && (
-                  <Button color="success" size="small">
+                  <Button
+                    color="success"
+                    size="small"
+                    loading={diaButtonDisable}
+                    onClick={() => wordHandle(WordStatus.mastered)}>
                     已了解
                   </Button>
                 )}
                 {wordStatus !== WordStatus.familiar && (
-                  <Button color="primary" size="small">
+                  <Button
+                    color="primary"
+                    size="small"
+                    onClick={() => wordHandle(WordStatus.familiar)}>
                     早就认识
                   </Button>
                 )}
@@ -313,12 +401,7 @@ const Word: FC = () => {
         onClose={() => {
           setWordVisible(false);
         }}
-        actions={[
-          {
-            key: 'confirm',
-            text: '关闭',
-          },
-        ]}
+        actions={[diaLogActions]}
       />
     </div>
   );

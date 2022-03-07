@@ -60,11 +60,7 @@ function MainNavBar() {
         title,
         backArrow,
         onBack,
-        right: (
-          <Button color="primary" fill="none" onClick={() => logHandle()}>
-            {isLogin ? '退出' : '登录'}
-          </Button>
-        ),
+        right: true,
       },
     });
   }, [isLogin]);
@@ -73,7 +69,15 @@ function MainNavBar() {
       className={classes.nav_bar}
       backArrow={backArrow}
       onBack={onBack}
-      right={right}>
+      right={
+        <Button
+          color="primary"
+          fill="none"
+          style={{ display: right ? '' : 'none' }}
+          onClick={() => logHandle()}>
+          {isLogin ? '退出' : '登录'}
+        </Button>
+      }>
       {title}
     </NavBar>
   );

@@ -1,6 +1,6 @@
 const router = require('koa-router')()
 
-router.get('*', async (ctx, next) => {
+router.all('*', async (ctx, next) => {
   ctx.userInfo = JSON.parse(
     decodeURIComponent(ctx.cookies.get('userInfo') || '{}', 'UTF-8')
   )
