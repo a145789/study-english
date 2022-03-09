@@ -192,6 +192,14 @@ router.post('/api/word_handle', async (ctx, next) => {
       userInfo: { userId }
     } = ctx
 
+    if (!userId) {
+      ctx.body = {
+        code: 401,
+        message: '请先登录'
+      }
+      return
+    }
+
     await UserModel.updateOne(
       { _id: userId },
       {
