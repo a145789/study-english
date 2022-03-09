@@ -1,9 +1,9 @@
 import { useContext, useMemo } from 'react';
 
-import { ContextData } from '../store/ContextApp';
+import { RootContextData } from '../store/ContextApp';
 
 const useLoadingCb = () => {
-  const { dispatch } = useContext(ContextData);
+  const { dispatch } = useContext(RootContextData);
   const loadingCb = useMemo(
     () => ({
       beforeCb: () => dispatch({ type: 'isLoading', payload: true }),

@@ -3,13 +3,13 @@ import { ContentOutline, EditSFill } from 'antd-mobile-icons';
 import React, { FC, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { ContextData } from '../../store/ContextApp';
+import { RootContextData } from '../../store/ContextApp';
 import classes from './index.module.css';
 
 const { show: ToastShow } = Toast;
 
 const Home: FC = () => {
-  const { navBar, dispatch } = useContext(ContextData);
+  const { navBar, dispatch } = useContext(RootContextData);
   const navigate = useNavigate();
 
   const goDictation = () => {

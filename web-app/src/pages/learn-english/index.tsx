@@ -2,7 +2,7 @@ import { List } from 'antd-mobile';
 import React, { FC, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { ContextData } from '../../store/ContextApp';
+import { RootContextData } from '../../store/ContextApp';
 import { getHandle } from '../../utils/fetch';
 import { useLoadingCb } from '../../utils/hooks';
 
@@ -15,7 +15,7 @@ type TypeList = {
 };
 
 const LearnEnglish: FC = () => {
-  const { navBar, dispatch } = useContext(ContextData);
+  const { navBar, dispatch } = useContext(RootContextData);
   const navigate = useNavigate();
   const loadingCb = useLoadingCb();
 

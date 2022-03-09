@@ -50,7 +50,11 @@ router.get('/api/word_list', async (ctx, next) => {
     } else if (wordStatus !== 'unfamiliar') {
       ctx.body = {
         code: 200,
-        data: []
+        data: {
+          hasMore: false,
+          skip: 0,
+          list: []
+        }
       }
       return
     }

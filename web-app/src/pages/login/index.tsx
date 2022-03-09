@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
 import { CertificationProcess } from '../../constants';
-import { ContextData } from '../../store/ContextApp';
+import { RootContextData } from '../../store/ContextApp';
 import { postHandle } from '../../utils/fetch';
 import { useLoadingCb } from '../../utils/hooks';
 import classes from './index.module.css';
@@ -52,7 +52,7 @@ const checkPassWord = (_: any, value: string) => {
 };
 
 const Login = () => {
-  const { navBar, dispatch } = useContext(ContextData);
+  const { navBar, dispatch } = useContext(RootContextData);
   const navigate = useNavigate();
   const [form] = Form.useForm();
 

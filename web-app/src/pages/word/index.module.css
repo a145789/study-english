@@ -32,3 +32,8 @@
   display: flex;
   justify-content: center;
 }
+
+.word_badge {
+  --right: -10px;
+  --top: 8px;
+}

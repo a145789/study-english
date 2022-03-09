@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 import React, { memo, useContext, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 
-import { ContextData } from '../../store/ContextApp';
+import { RootContextData } from '../../store/ContextApp';
 import { postHandle } from '../../utils/fetch';
 import { useLoadingCb } from '../../utils/hooks';
 import classes from './index.module.css';
@@ -29,7 +29,7 @@ function MainNavBar() {
     navBar: { title, backArrow, onBack, right },
     isLogin,
     dispatch,
-  } = useContext(ContextData);
+  } = useContext(RootContextData);
   const navigate = useNavigate();
 
   const loadingCb = useLoadingCb();
@@ -84,10 +84,11 @@ function MainNavBar() {
 }
 
 function MainTabBar() {
-  const { isShowTabBar } = useContext(ContextData);
+  const { isShowTabBar } = useContext(RootContextData);
+  const navigate = useNavigate();
 
   return isShowTabBar ? (
-    <TabBar safeArea className={classes.tab_bar}>
+    <TabBar safeArea className={classes.tab_bar} onChange={() => navigate('/')}>
       {[<TabBarItem key="Home" icon={<AppOutline />} title="首页" />]}
     </TabBar>
   ) : null;

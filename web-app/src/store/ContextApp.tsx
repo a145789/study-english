@@ -2,7 +2,7 @@ import Cookies from 'js-cookie';
 import React, { createContext, FC, ReactNode, useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type ActionType<T extends object> = {
+export type ActionType<T extends object> = {
   [key in keyof T]: {
     type: key;
     payload: T[key];
@@ -27,7 +27,7 @@ interface ContextStateType {
   dispatch: (action: ActionType<Omit<ContextStateType, 'dispatch'>>) => void;
 }
 
-export const ContextData = createContext<ContextStateType>(null as any);
+export const RootContextData = createContext<ContextStateType>(null as any);
 
 function reducer(
   state: Omit<ContextStateType, 'dispatch'>,
@@ -73,7 +73,9 @@ const ContextApp: FC = ({ children }) => {
   });
 
   return (
-    <ContextData.Provider value={{ ...state, dispatch }}>{children}</ContextData.Provider>
+    <RootContextData.Provider value={{ ...state, dispatch }}>
+      {children}
+    </RootContextData.Provider>
   );
 };
 

@@ -118,7 +118,7 @@ router.post('/api/login', async (ctx, next) => {
 
     // 设置session
     const sessionId = crypto
-      .createHash('sha256', user._id + shaKey)
+      .createHash('sha256', user._id + shaKey + new Date().getTime())
       .digest('hex')
 
     await UserModel.updateOne(
