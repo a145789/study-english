@@ -2,7 +2,7 @@ import { Button, NavBar, TabBar, Toast } from 'antd-mobile';
 import { AppOutline } from 'antd-mobile-icons';
 import Cookies from 'js-cookie';
 import React, { memo, useContext, useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { RootContextData } from '../../store/ContextApp';
 import { postHandle } from '../../utils/fetch';
@@ -84,12 +84,22 @@ function MainNavBar() {
 }
 
 function MainTabBar() {
-  const { isShowTabBar } = useContext(RootContextData);
+  const { isShowTabBar, isLogin } = useContext(RootContextData);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  const tabBarChange = (key: string) => {
+    navigate(key);
+  };
 
   return isShowTabBar ? (
-    <TabBar safeArea className={classes.tab_bar} onChange={() => navigate('/')}>
-      {[<TabBarItem key="Home" icon={<AppOutline />} title="首页" />]}
+    <TabBar
+      safeArea
+      activeKey={pathname}
+      className={classes.tab_bar}
+      onChange={tabBarChange}>
+      <TabBarItem key="/" icon={<AppOutline />} title="首页" />
+      {isLogin && <TabBarItem key="/mine" icon={<AppOutline />} title="我的" />}
     </TabBar>
   ) : null;
 }

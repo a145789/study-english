@@ -29,7 +29,7 @@ const Home: FC = () => {
         <div
           aria-hidden="true"
           className={classes.card}
-          onClick={() => navigate('learn-english')}>
+          onClick={() => navigate('word-bank')}>
           <ContentOutline color="#feada6" className={classes.icon} />
           <div className={classes.font}>背单词</div>
         </div>

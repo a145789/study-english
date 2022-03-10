@@ -3,9 +3,10 @@ import React, { FC, lazy, Suspense, useMemo } from 'react';
 import { useRoutes } from 'react-router-dom';
 
 const Home = lazy(() => import('../pages/home'));
-const LearnEnglish = lazy(() => import('../pages/learn-english'));
+const WordBank = lazy(() => import('../pages/word-bank'));
 const Login = lazy(() => import('../pages/login'));
 const Word = lazy(() => import('../pages/word'));
+const Mine = lazy(() => import('../pages/mine'));
 import OutMain from '../pages/out-main';
 
 const Route: FC = () => {
@@ -38,10 +39,10 @@ const Route: FC = () => {
           ),
         },
         {
-          path: 'learn-english',
+          path: 'word-bank',
           element: (
             <Suspense fallback={dotLoading}>
-              <LearnEnglish />
+              <WordBank />
             </Suspense>
           ),
         },
@@ -50,6 +51,14 @@ const Route: FC = () => {
           element: (
             <Suspense fallback={dotLoading}>
               <Word />
+            </Suspense>
+          ),
+        },
+        {
+          path: 'mine',
+          element: (
+            <Suspense fallback={dotLoading}>
+              <Mine />
             </Suspense>
           ),
         },

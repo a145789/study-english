@@ -14,7 +14,7 @@ type TypeList = {
   type: string;
 };
 
-const LearnEnglish: FC = () => {
+const WordBank: FC = () => {
   const { navBar, dispatch } = useContext(RootContextData);
   const navigate = useNavigate();
   const loadingCb = useLoadingCb();
@@ -51,4 +51,4 @@ const LearnEnglish: FC = () => {
   );
 };
 
-export default LearnEnglish;
+export default WordBank;

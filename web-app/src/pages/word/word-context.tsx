@@ -115,9 +115,9 @@ const WordContext: FC = ({ children }) => {
     [state.counts, state.wordStatus, state.wordList],
   );
 
-  const restPageOptions = () => {
+  const restPageOptions = useCallback(() => {
     dispatch({ type: 'pageOptions', payload: initWordStatus() });
-  };
+  }, []);
 
   return (
     <WordContextData.Provider value={{ ...state, getWord, restPageOptions, dispatch }}>
