@@ -113,7 +113,7 @@ router.post('/api/login', async (ctx, next) => {
     }
 
     if (!user) {
-      await UserModel.findOne({ email })
+      user = await UserModel.findOne({ email })
     }
 
     // 设置session
