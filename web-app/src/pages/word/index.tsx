@@ -4,10 +4,8 @@ import { useParams } from 'react-router-dom';
 
 import { RootContextData } from '../../store/ContextApp';
 import { getHandle } from '../../utils/fetch';
-import { useLoadingCb } from '../../utils/hooks';
 import { WordStatus } from './constants';
 import classes from './index.module.css';
-import { WordType } from './interface';
 import WordContext, { WordContextData, WordListType } from './word-context';
 import WordDialog from './word-dialog';
 
@@ -18,6 +16,7 @@ type WordListParams = {
   skip: number;
   hasMore: boolean;
   list: WordListType[];
+  count: number;
 };
 
 const WordComponent: FC = () => {
@@ -26,7 +25,6 @@ const WordComponent: FC = () => {
     wordList,
     pageOptions,
     wordStatus,
-    wordIndex,
     counts,
     getWord,
     restPageOptions,
@@ -45,8 +43,8 @@ const WordComponent: FC = () => {
     if (err) {
       return;
     }
-    const { hasMore, skip, list = [] } = data;
-    wordDispatch({ type: 'counts', payload: { ...counts, [wordStatus]: list.length } });
+    const { hasMore, skip, count, list = [] } = data;
+    wordDispatch({ type: 'counts', payload: { ...counts, [wordStatus]: count } });
     wordDispatch({ type: 'wordList', payload: [...wordList, ...list] });
     wordDispatch({ type: 'pageOptions', payload: { ...pageOptions, hasMore, skip } });
   };
@@ -60,6 +58,8 @@ const WordComponent: FC = () => {
   useEffect(() => {
     if (isLogin) {
       getWordList();
+    } else if (wordStatus === WordStatus.unfamiliar) {
+      getWordList();
     }
   }, [wordStatus]);
   useEffect(() => {
@@ -67,9 +67,6 @@ const WordComponent: FC = () => {
       type: 'navBar',
       payload: { ...navBar, title: '背单词', backArrow: true },
     });
-    if (!isLogin) {
-      getWordList();
-    }
   }, []);
 
   return (

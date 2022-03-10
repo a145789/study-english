@@ -53,6 +53,7 @@ router.get('/api/word_list', async (ctx, next) => {
         data: {
           hasMore: false,
           skip: 0,
+          count: 0,
           list: []
         }
       }
@@ -90,7 +91,8 @@ router.get('/api/word_list', async (ctx, next) => {
       data: {
         hasMore: nextSkip < count,
         skip: nextSkip,
-        list
+        list,
+        count
       }
     }
   })
