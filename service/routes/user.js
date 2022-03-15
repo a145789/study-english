@@ -21,21 +21,23 @@ const checkEmailCode = async (email, emailCode) => {
 
 router.post('/api/getEmailCode', async (ctx, next) => {
   await responseCatch(ctx, async () => {
-    const { email, isUseCodeLogin } = ctx.request.body
+    const { email, isUseCodeLogin, isUpdatePassword } = ctx.request.body
     const user = await UserModel.findOne({ email })
-    if (!isUseCodeLogin && user) {
-      ctx.body = {
-        code: 0,
-        message: '邮箱已被注册'
+    if (!isUpdatePassword) {
+      if (!isUseCodeLogin && user) {
+        ctx.body = {
+          code: 0,
+          message: '邮箱已被注册'
+        }
+        return
       }
-      return
-    }
-    if (isUseCodeLogin && !user) {
-      ctx.body = {
-        code: 0,
-        message: '该邮箱未被注册'
+      if (isUseCodeLogin && !user) {
+        ctx.body = {
+          code: 0,
+          message: '该邮箱未被注册'
+        }
+        return
       }
-      return
     }
     const emailCode = Math.random().toString().slice(2, 6)
     const setEmailCode = new EmailCodeModel({ email, emailCode })
@@ -121,10 +123,23 @@ router.post('/api/login', async (ctx, next) => {
       .createHash('sha256', user._id + shaKey + new Date().getTime())
       .digest('hex')
 
-    await UserModel.updateOne(
+    const { _doc } = await UserModel.findOneAndUpdate(
       { _id: user._id },
-      { sessionId, updateTime: Date.now() }
+      { $set: { sessionId, updateTime: Date.now() } },
+      {
+        new: true,
+        fields: {
+          password: 0,
+          sessionId: 0,
+          createTime: 0,
+          updateTime: 0,
+          unfamiliar: 0,
+          phone: 0
+        }
+      }
     )
+
+    const { _id, familiar, will, mastered, ...arg } = _doc
     ctx.cookies.set('session', sessionId, {
       path: '/', // 有效范围
       httpOnly: true, // 只能在服务器修改
@@ -133,10 +148,65 @@ router.post('/api/login', async (ctx, next) => {
     ctx.body = {
       code: 200,
       data: {
-        username: user.username,
-        userId: user._id,
-        email: user.email
+        ...arg,
+        userId: _id,
+        familiarCount: familiar?.length || 0,
+        willCount: will?.length || 0,
+        masteredCount: mastered?.length || 0
       }
+    }
+  })
+})
+
+router.post('/api/update_password', async (ctx, next) => {
+  await responseCatch(ctx, async () => {
+    const { password, email, emailCode } = ctx.request.body
+    const {
+      userInfo: { userId }
+    } = ctx
+
+    const errBody = await checkEmailCode(email, emailCode)
+    if (errBody) {
+      ctx.body = errBody
+      return
+    }
+    await UserModel.updateOne(
+      { _id: userId },
+      { password, updateTime: Date.now() }
+    )
+
+    ctx.body = {
+      code: 200,
+      data: null
+    }
+  })
+})
+
+router.post('/api/update_username', async (ctx, next) => {
+  await responseCatch(ctx, async () => {
+    const { username } = ctx.request.body
+    const {
+      userInfo: { userId }
+    } = ctx
+
+    const userDb = await UserModel.findOne({ username })
+    if (userDb) {
+      ctx.body = {
+        code: 0,
+        message: '用户名已存在',
+        data: null
+      }
+      return
+    }
+
+    await UserModel.updateOne(
+      { _id: userId },
+      { $set: { username, updateTime: Date.now() } }
+    )
+
+    ctx.body = {
+      code: 200,
+      data: null
     }
   })
 })

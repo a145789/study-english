@@ -16,3 +16,5 @@ export const enum ResponseCode {
   /** 请求超时 */
   timeout = 504,
 }
+
+export const VERSION = '1.9.0';

@@ -205,6 +205,7 @@ router.post('/api/word_handle', async (ctx, next) => {
     await UserModel.updateOne(
       { _id: userId },
       {
+        updateTime: Date.now(),
         $push: {
           [moveWordStatus]: _id
         },

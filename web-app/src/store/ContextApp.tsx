@@ -2,6 +2,8 @@ import Cookies from 'js-cookie';
 import React, { createContext, FC, ReactNode, useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { UserInfo } from '../interface';
+
 export type ActionType<T extends object> = {
   [key in keyof T]: {
     type: key;
@@ -19,15 +21,15 @@ interface ContextStateType {
   isLoading: boolean;
   isShowTabBar: boolean;
   isLogin: boolean;
-  userInfo: {
-    userId: string;
-    username: string;
-    email: string;
-  } | null;
+  userInfo: UserInfo | null;
   dispatch: (action: ActionType<Omit<ContextStateType, 'dispatch'>>) => void;
 }
 
-export const RootContextData = createContext<ContextStateType>(null as any);
+export const RootContextData = createContext<
+  ContextStateType & {
+    setUserInfo: (userInfo: UserInfo | null) => void;
+  }
+>(null as any);
 
 function reducer(
   state: Omit<ContextStateType, 'dispatch'>,
@@ -43,11 +45,6 @@ function reducer(
     case 'isLogin':
       return { ...state, isLogin: action.payload };
     case 'userInfo':
-      if (action.payload) {
-        Cookies.set('userInfo', JSON.stringify(action.payload), {
-          expires: 7,
-        });
-      }
       return { ...state, userInfo: action.payload };
     default:
       return state;
@@ -72,8 +69,19 @@ const ContextApp: FC = ({ children }) => {
     userInfo: JSON.parse(Cookies.get('userInfo') || 'null'),
   });
 
+  const setUserInfo = (userInfo: UserInfo | null) => {
+    if (userInfo) {
+      Cookies.set('userInfo', JSON.stringify(userInfo), {
+        expires: 7,
+      });
+    } else {
+      Cookies.remove('userInfo');
+    }
+    dispatch({ type: 'userInfo', payload: userInfo });
+  };
+
   return (
-    <RootContextData.Provider value={{ ...state, dispatch }}>
+    <RootContextData.Provider value={{ ...state, dispatch, setUserInfo }}>
       {children}
     </RootContextData.Provider>
   );

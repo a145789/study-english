@@ -5,9 +5,10 @@ import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
 import { CertificationProcess } from '../../constants';
+import { UserInfo } from '../../interface';
 import { RootContextData } from '../../store/ContextApp';
 import { postHandle } from '../../utils/fetch';
-import { useLoadingCb } from '../../utils/hooks';
+import { useLoadingCb, useLogout } from '../../utils/hooks';
 import classes from './index.module.css';
 
 const { Item: FormItem } = Form;
@@ -30,9 +31,12 @@ const checkUserEmail = (_: any, value: string) => {
   return Promise.resolve();
 };
 
-const checkUserName = (_: any, value: string) => {
+export const checkUserName = (_: any, value: string) => {
   if (!value || value.length < 1) {
     return Promise.resolve();
+  }
+  if (value.length > 9) {
+    return Promise.reject('账号长度不能超过9位');
   }
   if (!/[a-zA-Z]/.test(value[0])) {
     return Promise.reject(new Error('用户名必须以大小写字母开头'));
@@ -52,33 +56,29 @@ const checkPassWord = (_: any, value: string) => {
 };
 
 const Login = () => {
-  const { navBar, dispatch } = useContext(RootContextData);
+  const { navBar, userInfo, setUserInfo, dispatch } = useContext(RootContextData);
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const logout = useLogout();
 
-  const { process } = useParams();
+  const { process } = useParams<{ process: CertificationProcess }>();
 
-  const [certificationProcess, setCertificationProcess] = useState(
+  const [certificationProcess, setCertificationProcess] = useState<CertificationProcess>(
     process || CertificationProcess.login,
   );
   const [isUseCodeLogin, setIsUseCodeLogin] = useState(false);
   const [codeStatus, setCodeStatus] = useState(CodeStatus.send);
   const [codePendingNum, setPendingCode] = useState(INIT_PENDING_TIME);
+  const loadingCb = useLoadingCb();
 
   const codeTimer = useRef<number>(0);
-
-  const loadingCb = useLoadingCb();
 
   const submit = async (values: any) => {
     switch (certificationProcess) {
       case CertificationProcess.login: {
         const params = { ...values, isUseCodeLogin };
         !isUseCodeLogin && (params.password = Md5.init(values.password));
-        const { err, data } = await postHandle<{
-          userId: string;
-          username: string;
-          email: string;
-        }>('login', params, loadingCb);
+        const { err, data } = await postHandle<UserInfo>('login', params, loadingCb);
         if (err) {
           return;
         }
@@ -87,7 +87,7 @@ const Login = () => {
           icon: 'success',
           content: '登录成功',
         });
-        dispatch({ type: 'userInfo', payload: data });
+        setUserInfo(data);
         dispatch({ type: 'isLogin', payload: true });
         navigate('/', { replace: true });
         break;
@@ -110,7 +110,24 @@ const Login = () => {
         break;
       }
       case CertificationProcess.updatePassword:
-        console.log('updatePassword');
+        {
+          const { err } = await postHandle('update_password', {
+            ...values,
+            password: Md5.init(values.password),
+            loadingCb,
+          });
+          if (err) {
+            return;
+          }
+
+          ToastShow({
+            icon: 'success',
+            content: '修改成功',
+          });
+
+          logout();
+          setCertificationProcess(CertificationProcess.login);
+        }
         break;
 
       default:
@@ -138,7 +155,11 @@ const Login = () => {
 
     const { err } = await postHandle(
       'getEmailCode',
-      { email, isUseCodeLogin },
+      {
+        email,
+        isUseCodeLogin,
+        isUpdatePassword: certificationProcess === CertificationProcess.updatePassword,
+      },
       loadingCb,
     );
     if (err) {
@@ -148,6 +169,9 @@ const Login = () => {
     setCodeStatus(CodeStatus.pending);
   };
 
+  useEffect(() => {
+    form.resetFields();
+  }, [certificationProcess, isUseCodeLogin]);
   useEffect(() => {
     switch (certificationProcess) {
       case CertificationProcess.login:
@@ -185,16 +209,14 @@ const Login = () => {
             right: false,
           },
         });
+
+        form.setFieldsValue({ email: userInfo?.email });
         break;
 
       default:
         break;
     }
   }, [certificationProcess]);
-
-  useEffect(() => {
-    form.resetFields();
-  }, [certificationProcess, isUseCodeLogin]);
 
   useEffect(() => {
     if (codeStatus !== CodeStatus.pending) {
@@ -267,7 +289,11 @@ const Login = () => {
           { required: true, message: '邮箱不能为空' },
           { validator: checkUserEmail },
         ]}>
-        <Input placeholder="请输入邮箱" clearable />
+        <Input
+          disabled={certificationProcess === CertificationProcess.updatePassword}
+          placeholder="请输入邮箱"
+          clearable
+        />
       </FormItem>
     ),
     [],
@@ -293,7 +319,7 @@ const Login = () => {
               : '重新发送'}
           </Button>
         }>
-        <Input placeholder="请输入" type="number" />
+        <Input placeholder="请输入" type="tel" />
       </FormItem>
     ),
     [isUseCodeLogin, codeStatus, codePendingNum],
@@ -325,7 +351,8 @@ const Login = () => {
       case CertificationProcess.updatePassword:
         return (
           <>
-            {usernameEle}
+            {emailEle}
+            {emailCodeEle}
             {passwordEle}
           </>
         );

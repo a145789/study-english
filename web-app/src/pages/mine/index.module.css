@@ -1,3 +1,7 @@
 .version {
   margin-top: 50px;
 }
+
+.custom_form :global .adm-form-item.adm-form-item-horizontal.adm-list-item {
+  --prefix-width: 52px;
+}

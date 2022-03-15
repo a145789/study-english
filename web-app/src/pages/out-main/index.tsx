@@ -1,16 +1,13 @@
-import { Button, NavBar, TabBar, Toast } from 'antd-mobile';
+import { Button, NavBar, TabBar } from 'antd-mobile';
 import { AppOutline } from 'antd-mobile-icons';
-import Cookies from 'js-cookie';
 import React, { memo, useContext, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { RootContextData } from '../../store/ContextApp';
-import { postHandle } from '../../utils/fetch';
-import { useLoadingCb } from '../../utils/hooks';
+import { useLogout } from '../../utils/hooks';
 import classes from './index.module.css';
 
 const { Item: TabBarItem } = TabBar;
-const { show: ToastShow } = Toast;
 
 const OutMain = memo(function OutMain() {
   return (
@@ -28,28 +25,17 @@ function MainNavBar() {
   const {
     navBar: { title, backArrow, onBack, right },
     isLogin,
+    userInfo,
     dispatch,
   } = useContext(RootContextData);
   const navigate = useNavigate();
-
-  const loadingCb = useLoadingCb();
+  const logout = useLogout();
 
   const logHandle = async () => {
-    const userInfo = JSON.parse(Cookies.get('userInfo') || 'null');
     if (!isLogin || !userInfo) {
       navigate('/login');
     } else {
-      const { err } = await postHandle('logout', userInfo, loadingCb);
-      if (err) {
-        return;
-      }
-      Cookies.remove('userInfo');
-      dispatch({ type: 'isLogin', payload: false });
-      dispatch({ type: 'userInfo', payload: null });
-      ToastShow({
-        icon: 'success',
-        content: '退出成功',
-      });
+      logout();
     }
   };
 
