@@ -6,6 +6,7 @@
     "start": "node bin/www",
     "dev": "nodemon bin/www",
     "prd": "pm2 start bin/www",
+    "prestart": "pm2 restart bin/www",
     "test": "echo \"Error: no test specified\" && exit 1",
     "preinstall": "npx only-allow pnpm"
   },
