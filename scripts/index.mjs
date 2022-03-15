@@ -12,6 +12,6 @@ await $`mv ../web-app/dist ../service/dist`
 
 await $`rm -rf ../web-app/dist`
 
-await $`cd ../service && pnpm prd`
+await $`cd ../service && pnpm prestart`
 
 console.log('Done!')
