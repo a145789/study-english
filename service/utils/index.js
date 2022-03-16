@@ -34,4 +34,15 @@ const responseCatch = async (ctx, cb) => {
   }
 }
 
-module.exports = { sendEmail, responseCatch }
+const getUserInfo = _doc => {
+  const { _id, familiar, will, mastered, ...arg } = _doc
+
+  return {
+    ...arg,
+    userId: _id,
+    familiarCount: familiar?.length || 0,
+    willCount: will?.length || 0,
+    masteredCount: mastered?.length || 0
+  }
+}
+module.exports = { sendEmail, responseCatch, getUserInfo }

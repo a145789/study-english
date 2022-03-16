@@ -1,7 +1,8 @@
 const router = require('koa-router')()
 const mongoose = require('mongoose')
-const { responseCatch } = require('../utils/index')
+const { responseCatch, getUserInfo } = require('../utils/index')
 const fetch = require('node-fetch')
+const { userInfoFields } = require('../constants/index')
 const {
   WordTypeCodeMong: { WordTypeCodeModel },
   WordMong: { WordModel }
@@ -202,7 +203,7 @@ router.post('/api/word_handle', async (ctx, next) => {
       return
     }
 
-    await UserModel.updateOne(
+    const { _doc } = await UserModel.findOneAndUpdate(
       { _id: userId },
       {
         updateTime: Date.now(),
@@ -212,12 +213,16 @@ router.post('/api/word_handle', async (ctx, next) => {
         $pull: {
           [wordStatus]: _id
         }
+      },
+      {
+        new: true,
+        fields: userInfoFields
       }
     )
 
     ctx.body = {
       code: 200,
-      data: null
+      data: getUserInfo(_doc)
     }
   })
 })

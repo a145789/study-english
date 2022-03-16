@@ -20,12 +20,17 @@ type WordListParams = {
 };
 
 const WordComponent: FC = () => {
-  const { navBar, isLogin, dispatch: rootDispatch } = useContext(RootContextData);
+  const {
+    navBar,
+    isLogin,
+    userInfo,
+    dispatch: rootDispatch,
+  } = useContext(RootContextData);
   const {
     wordList,
     pageOptions,
     wordStatus,
-    counts,
+    wordListTabCount,
     getWord,
     restPageOptions,
     dispatch: wordDispatch,
@@ -44,7 +49,12 @@ const WordComponent: FC = () => {
       return;
     }
     const { hasMore, skip, count, list = [] } = data;
-    wordDispatch({ type: 'counts', payload: { ...counts, [wordStatus]: count } });
+    if (wordStatus === WordStatus.unfamiliar) {
+      wordDispatch({
+        type: 'unfamiliarCount',
+        payload: count,
+      });
+    }
     wordDispatch({ type: 'wordList', payload: [...wordList, ...list] });
     wordDispatch({ type: 'pageOptions', payload: { ...pageOptions, hasMore, skip } });
   };
@@ -56,12 +66,23 @@ const WordComponent: FC = () => {
   };
 
   useEffect(() => {
-    if (isLogin) {
-      getWordList();
-    } else if (wordStatus === WordStatus.unfamiliar) {
+    if (isLogin || wordStatus === WordStatus.unfamiliar) {
       getWordList();
     }
-  }, [wordStatus]);
+  }, [isLogin, wordStatus]);
+  useEffect(() => {
+    if (userInfo) {
+      const { willCount, masteredCount, familiarCount } = userInfo;
+      wordDispatch({
+        type: 'otherWordListCount',
+        payload: {
+          [WordStatus.will]: willCount,
+          [WordStatus.mastered]: masteredCount,
+          [WordStatus.familiar]: familiarCount,
+        },
+      });
+    }
+  }, [userInfo]);
   useEffect(() => {
     rootDispatch({
       type: 'navBar',
@@ -74,9 +95,9 @@ const WordComponent: FC = () => {
       <Tabs activeKey={wordStatus} onChange={tabChange}>
         <Tab
           title={
-            counts[WordStatus.unfamiliar] !== null ? (
+            wordListTabCount[WordStatus.unfamiliar] !== null ? (
               <Badge
-                content={String(counts[WordStatus.unfamiliar])}
+                content={String(wordListTabCount[WordStatus.unfamiliar])}
                 className={classes.word_badge}>
                 不认识
               </Badge>
@@ -88,9 +109,9 @@ const WordComponent: FC = () => {
         />
         <Tab
           title={
-            counts[WordStatus.will] !== null ? (
+            wordListTabCount[WordStatus.will] !== null ? (
               <Badge
-                content={String(counts[WordStatus.will])}
+                content={String(wordListTabCount[WordStatus.will])}
                 className={classes.word_badge}>
                 不熟悉
               </Badge>
@@ -102,9 +123,9 @@ const WordComponent: FC = () => {
         />
         <Tab
           title={
-            counts[WordStatus.mastered] !== null ? (
+            wordListTabCount[WordStatus.mastered] !== null ? (
               <Badge
-                content={String(counts[WordStatus.mastered])}
+                content={String(wordListTabCount[WordStatus.mastered])}
                 className={classes.word_badge}>
                 已了解
               </Badge>
@@ -116,9 +137,9 @@ const WordComponent: FC = () => {
         />
         <Tab
           title={
-            counts[WordStatus.familiar] !== null ? (
+            wordListTabCount[WordStatus.familiar] !== null ? (
               <Badge
-                content={String(counts[WordStatus.familiar])}
+                content={String(wordListTabCount[WordStatus.familiar])}
                 className={classes.word_badge}>
                 早就认识
               </Badge>

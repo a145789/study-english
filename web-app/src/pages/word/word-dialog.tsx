@@ -3,6 +3,8 @@ import { Action } from 'antd-mobile/es/components/modal/modal-action-button';
 import { SoundOutline } from 'antd-mobile-icons';
 import React, { FC, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
+import { UserInfo } from '../../interface';
+import { RootContextData } from '../../store/ContextApp';
 import { postHandle } from '../../utils/fetch';
 import { WordStatus } from './constants';
 import classes from './index.module.css';
@@ -18,13 +20,14 @@ const WordDialog: FC = () => {
     pageOptions,
     wordIndex,
     word,
-    counts,
+    wordListTabCount,
     wordStatus,
     wordDialogVisible,
     wordList,
     getWord,
-    dispatch,
+    dispatch: wordDispatch,
   } = useContext(WordContextData);
+  const { setUserInfo } = useContext(RootContextData);
 
   const audioRef = useRef<{
     am: HTMLAudioElement | null;
@@ -42,7 +45,7 @@ const WordDialog: FC = () => {
     }
   };
   const wordHandle = async (type: WordStatus) => {
-    const { err } = await postHandle('word_handle', {
+    const { err, data } = await postHandle<UserInfo>('word_handle', {
       _id: word._id,
       wordStatus,
       moveWordStatus: type,
@@ -51,19 +54,29 @@ const WordDialog: FC = () => {
       return;
     }
 
-    dispatch({
+    wordDispatch({
       type: 'pageOptions',
       payload: {
         ...pageOptions,
         skip: pageOptions.skip === 0 ? 0 : pageOptions.skip - 1,
       },
     });
-    dispatch({
-      type: 'counts',
-      payload: { ...counts, [wordStatus]: counts[wordStatus]! - 1 },
-    });
+    if (wordStatus === WordStatus.unfamiliar) {
+      wordDispatch({
+        type: 'unfamiliarCount',
+        payload: wordListTabCount[WordStatus.unfamiliar]! - 1,
+      });
+    }
+    if (type === WordStatus.unfamiliar) {
+      wordDispatch({
+        type: 'unfamiliarCount',
+        payload: wordListTabCount[WordStatus.unfamiliar]! + 1,
+      });
+    }
+
+    setUserInfo(data);
     wordList.splice(wordIndex.currentIndex, 1);
-    dispatch({ type: 'wordList', payload: wordList.slice() });
+    wordDispatch({ type: 'wordList', payload: wordList.slice() });
 
     getWord(wordIndex.currentIndex);
   };
@@ -93,7 +106,7 @@ const WordDialog: FC = () => {
         },
       });
     }
-    return actions;
+    return [actions];
   }, [wordIndex, getWord]);
 
   useEffect(() => {
@@ -217,9 +230,9 @@ const WordDialog: FC = () => {
         </>
       }
       onClose={() => {
-        dispatch({ type: 'wordDialogVisible', payload: false });
+        wordDispatch({ type: 'wordDialogVisible', payload: false });
       }}
-      actions={[diaLogActions]}
+      actions={diaLogActions}
     />
   );
 };

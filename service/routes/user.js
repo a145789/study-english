@@ -1,5 +1,6 @@
 const router = require('koa-router')()
-const { sendEmail, responseCatch } = require('../utils/index')
+const { sendEmail, responseCatch, getUserInfo } = require('../utils/index')
+const { userInfoFields } = require('../constants/index')
 const {
   EmailCodeMong: { EmailCodeModel },
   UserMong: { UserModel }
@@ -128,32 +129,19 @@ router.post('/api/login', async (ctx, next) => {
       { $set: { sessionId, updateTime: Date.now() } },
       {
         new: true,
-        fields: {
-          password: 0,
-          sessionId: 0,
-          createTime: 0,
-          updateTime: 0,
-          unfamiliar: 0,
-          phone: 0
-        }
+        fields: userInfoFields
       }
     )
 
-    const { _id, familiar, will, mastered, ...arg } = _doc
     ctx.cookies.set('session', sessionId, {
       path: '/', // 有效范围
       httpOnly: true, // 只能在服务器修改
       maxAge: 24 * 60 * 60 * 7
     })
+
     ctx.body = {
       code: 200,
-      data: {
-        ...arg,
-        userId: _id,
-        familiarCount: familiar?.length || 0,
-        willCount: will?.length || 0,
-        masteredCount: mastered?.length || 0
-      }
+      data: getUserInfo(_doc)
     }
   })
 })

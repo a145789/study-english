@@ -296,14 +296,14 @@ const Login = () => {
         />
       </FormItem>
     ),
-    [],
+    [certificationProcess],
   );
 
   const emailCodeEle = useMemo(
     () => (
       <FormItem
         name="emailCode"
-        label="短信验证码"
+        label="邮箱验证码"
         rules={[{ required: true, message: '请输入四位验证码', len: 4 }]}
         extra={
           <Button
@@ -360,7 +360,14 @@ const Login = () => {
       default:
         break;
     }
-  }, [isUseCodeLogin, usernameEle, passwordEle, emailEle, emailCodeEle]);
+  }, [
+    certificationProcess,
+    isUseCodeLogin,
+    usernameEle,
+    passwordEle,
+    emailEle,
+    emailCodeEle,
+  ]);
 
   return (
     <div className={classes.login}>

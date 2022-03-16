@@ -22,7 +22,7 @@ interface ContextStateType {
     currentIndex: number;
     nextIndex: number | null;
   };
-  counts: {
+  wordListTabCount: {
     [WordStatus.unfamiliar]: number | null;
     [WordStatus.will]: number | null;
     [WordStatus.mastered]: number | null;
@@ -31,7 +31,17 @@ interface ContextStateType {
   dispatch: (action: WordActionType) => void;
 }
 
-type WordActionType = ActionType<Omit<ContextStateType, 'dispatch'>>;
+type WordActionType =
+  | ActionType<Omit<ContextStateType, 'dispatch'>>
+  | { type: 'unfamiliarCount'; payload: number }
+  | {
+      type: 'otherWordListCount';
+      payload: {
+        [WordStatus.will]: number | null;
+        [WordStatus.mastered]: number | null;
+        [WordStatus.familiar]: number | null;
+      };
+    };
 
 const initWordStatus = () => ({
   skip: 0,
@@ -56,8 +66,24 @@ function reducer(state: Omit<ContextStateType, 'dispatch'>, action: WordActionTy
       return { ...state, pageOptions: action.payload };
     case 'wordIndex':
       return { ...state, wordIndex: action.payload };
-    case 'counts':
-      return { ...state, counts: action.payload };
+    case 'wordListTabCount':
+      return { ...state, wordListTabCount: action.payload };
+    case 'unfamiliarCount':
+      return {
+        ...state,
+        wordListTabCount: {
+          ...state.wordListTabCount,
+          [WordStatus.unfamiliar]: action.payload,
+        },
+      };
+    case 'otherWordListCount':
+      return {
+        ...state,
+        wordListTabCount: {
+          ...state.wordListTabCount,
+          ...action.payload,
+        },
+      };
     case 'wordStatus':
       return { ...state, wordStatus: action.payload };
     case 'wordList':
@@ -80,7 +106,7 @@ const WordContext: FC = ({ children }) => {
       currentIndex: 0,
       nextIndex: null,
     },
-    counts: {
+    wordListTabCount: {
       [WordStatus.unfamiliar]: null,
       [WordStatus.will]: null,
       [WordStatus.mastered]: null,
@@ -95,7 +121,8 @@ const WordContext: FC = ({ children }) => {
         payload: {
           preIndex: index === 0 ? null : index - 1,
           currentIndex: index,
-          nextIndex: index + 1 === state.counts[state.wordStatus] ? null : index + 1,
+          nextIndex:
+            index + 1 === state.wordListTabCount[state.wordStatus] ? null : index + 1,
         },
       });
       if (!state.wordList[index]) {
@@ -112,7 +139,7 @@ const WordContext: FC = ({ children }) => {
       dispatch({ type: 'word', payload: data });
       dispatch({ type: 'wordDialogVisible', payload: true });
     },
-    [state.counts, state.wordStatus, state.wordList],
+    [state.wordListTabCount, state.wordStatus, state.wordList],
   );
 
   const restPageOptions = useCallback(() => {
