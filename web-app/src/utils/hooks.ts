@@ -21,20 +21,24 @@ const useLoadingCb = () => {
 };
 
 const useLogout = () => {
-  const { userInfo, setUserInfo, dispatch } = useContext(RootContextData);
+  const { setUserInfo, dispatch } = useContext(RootContextData);
   const loadingCb = useLoadingCb();
 
-  return async () => {
-    const { err } = await postHandle('logout', userInfo, loadingCb);
+  return async (options?: { isShowToast?: boolean }) => {
+    const { isShowToast = true } = options || {};
+    const { err } = await postHandle('logout', {}, loadingCb);
     if (err) {
       return;
     }
     dispatch({ type: 'isLogin', payload: false });
     setUserInfo(null);
-    ToastShow({
-      icon: 'success',
-      content: '请重新登录',
-    });
+    Cookies.remove('userInfo');
+    if (isShowToast) {
+      ToastShow({
+        icon: 'success',
+        content: '请重新登录',
+      });
+    }
   };
 };
 

@@ -6,6 +6,7 @@ const {
   UserMong: { UserModel }
 } = require('../db/modules/user')
 const crypto = require('crypto')
+const { SEVEN_DAYS_LATER } = require('../constants/index')
 const shaKey = 'LoveAba'
 
 const checkEmailCode = async (email, emailCode) => {
@@ -136,7 +137,7 @@ router.post('/api/login', async (ctx, next) => {
     ctx.cookies.set('session', sessionId, {
       path: '/', // 有效范围
       httpOnly: true, // 只能在服务器修改
-      maxAge: 24 * 60 * 60 * 7
+      maxAge: SEVEN_DAYS_LATER
     })
 
     ctx.body = {
@@ -199,13 +200,29 @@ router.post('/api/update_username', async (ctx, next) => {
   })
 })
 
+router.post('/api/user_info', async (ctx, next) => {
+  await responseCatch(ctx, async () => {
+    const {
+      userInfo: { userId }
+    } = ctx
+    const { _doc } = await UserModel.findOne({ _id: userId })
+
+    ctx.body = {
+      code: 200,
+      data: getUserInfo(_doc)
+    }
+  })
+})
+
 router.post('/api/logout', async (ctx, next) => {
   await responseCatch(ctx, async () => {
-    const { userId } = ctx.request.body
-    await UserModel.updateOne(
-      { _id: userId },
-      { sessionId: '', updateTime: Date.now() }
-    )
+    const { userId } = ctx?.userInfo
+    if (userId) {
+      await UserModel.updateOne(
+        { _id: userId },
+        { sessionId: '', updateTime: Date.now() }
+      )
+    }
     ctx.cookies.set('session', '', {
       path: '/', // 有效范围
       httpOnly: true, // 只能在服务器修改

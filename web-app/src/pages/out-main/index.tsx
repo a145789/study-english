@@ -10,6 +10,16 @@ import classes from './index.module.css';
 const { Item: TabBarItem } = TabBar;
 
 const OutMain = memo(function OutMain() {
+  const { isLogin, getUserInfo } = useContext(RootContextData);
+  const logout = useLogout();
+
+  useEffect(() => {
+    if (isLogin) {
+      getUserInfo();
+    } else {
+      logout({ isShowToast: false });
+    }
+  }, [isLogin]);
   return (
     <>
       <MainNavBar />

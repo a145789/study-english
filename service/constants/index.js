@@ -7,4 +7,6 @@ const userInfoFields = {
   phone: 0
 }
 
-module.exports = { userInfoFields }
+const SEVEN_DAYS_LATER = 7 * 24 * 60 * 60 * 1000
+
+module.exports = { userInfoFields, SEVEN_DAYS_LATER }

@@ -1,4 +1,5 @@
 const router = require('koa-router')()
+const { SEVEN_DAYS_LATER } = require('../constants/index')
 
 router.all('*', async (ctx, next) => {
   ctx.userInfo = JSON.parse(
@@ -9,7 +10,7 @@ router.all('*', async (ctx, next) => {
     ctx.cookies.set('session', sessionId, {
       path: '/', // 有效范围
       httpOnly: true, // 只能在服务器修改
-      maxAge: 24 * 60 * 60 * 7
+      maxAge: SEVEN_DAYS_LATER
     })
   }
   await next()

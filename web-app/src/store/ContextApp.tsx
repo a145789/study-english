@@ -1,8 +1,16 @@
 import Cookies from 'js-cookie';
-import React, { createContext, FC, ReactNode, useReducer } from 'react';
+import React, {
+  createContext,
+  FC,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useReducer,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { UserInfo } from '../interface';
+import { postHandle } from '../utils/fetch';
 
 export type ActionType<T extends object> = {
   [key in keyof T]: {
@@ -28,6 +36,7 @@ interface ContextStateType {
 export const RootContextData = createContext<
   ContextStateType & {
     setUserInfo: (userInfo: UserInfo | null) => void;
+    getUserInfo: () => void;
   }
 >(null as any);
 
@@ -69,7 +78,7 @@ const ContextApp: FC = ({ children }) => {
     userInfo: JSON.parse(Cookies.get('userInfo') || 'null'),
   });
 
-  const setUserInfo = (userInfo: UserInfo | null) => {
+  const setUserInfo = useCallback((userInfo: UserInfo | null) => {
     if (userInfo) {
       Cookies.set('userInfo', JSON.stringify(userInfo), {
         expires: 7,
@@ -78,10 +87,18 @@ const ContextApp: FC = ({ children }) => {
       Cookies.remove('userInfo');
     }
     dispatch({ type: 'userInfo', payload: userInfo });
-  };
+  }, []);
+
+  const getUserInfo = useCallback(async () => {
+    const { err, data } = await postHandle<UserInfo>('user_info');
+    if (err) {
+      return;
+    }
+    setUserInfo(data);
+  }, []);
 
   return (
-    <RootContextData.Provider value={{ ...state, dispatch, setUserInfo }}>
+    <RootContextData.Provider value={{ ...state, dispatch, setUserInfo, getUserInfo }}>
       {children}
     </RootContextData.Provider>
   );
