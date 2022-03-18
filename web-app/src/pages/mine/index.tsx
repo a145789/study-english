@@ -6,7 +6,7 @@ import { VERSION } from '../../constants';
 import { CertificationProcess } from '../../constants';
 import { RootContextData } from '../../store/ContextApp';
 import { postHandle } from '../../utils/fetch';
-import { useLoadingCb } from '../../utils/hooks';
+import { useMainLoadingCb } from '../../utils/hooks';
 import { checkUserName } from '../login';
 import classes from './index.module.css';
 
@@ -18,7 +18,7 @@ const Mine: FC = () => {
   const { navBar, userInfo, setUserInfo, dispatch } = useContext(RootContextData);
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const loadingCb = useLoadingCb();
+  const loadingCb = useMainLoadingCb();
 
   const [isUpdateUsername, setIsUpdateUsername] = useState(false);
 

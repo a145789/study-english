@@ -2,7 +2,6 @@ import React, { createContext, FC, useCallback, useReducer } from 'react';
 
 import { ActionType } from '../../store/ContextApp';
 import { getHandle } from '../../utils/fetch';
-import { useLoadingCb } from '../../utils/hooks';
 import { WordStatus } from './constants';
 import { WordType } from './interface';
 
@@ -51,7 +50,14 @@ const initWordStatus = () => ({
 
 export const WordContextData = createContext<
   ContextStateType & {
-    getWord: (index: number) => void;
+    getWord: (
+      index: number,
+      loadingCb?: {
+        beforeCb: () => void;
+        resolveCb: () => void;
+        rejectCb: () => void;
+      },
+    ) => void;
     restPageOptions: () => void;
   }
 >(null as any);
@@ -94,7 +100,6 @@ function reducer(state: Omit<ContextStateType, 'dispatch'>, action: WordActionTy
 }
 
 const WordContext: FC = ({ children }) => {
-  const loadingCb = useLoadingCb();
   const [state, dispatch] = useReducer(reducer, {
     word: {} as WordType,
     wordDialogVisible: false,
@@ -115,7 +120,14 @@ const WordContext: FC = ({ children }) => {
   });
 
   const getWord = useCallback(
-    async (index: number) => {
+    async (
+      index: number,
+      loadingCb?: {
+        beforeCb: () => void;
+        resolveCb: () => void;
+        rejectCb: () => void;
+      },
+    ) => {
       dispatch({
         type: 'wordIndex',
         payload: {

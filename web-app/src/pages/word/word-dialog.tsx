@@ -29,6 +29,20 @@ const WordDialog: FC = () => {
   } = useContext(WordContextData);
   const { setUserInfo } = useContext(RootContextData);
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  const loadingCb = {
+    beforeCb: () => {
+      setIsLoading(true);
+    },
+    resolveCb: () => {
+      setIsLoading(false);
+    },
+    rejectCb: () => {
+      setIsLoading(false);
+    },
+  };
+
   const audioRef = useRef<{
     am: HTMLAudioElement | null;
     br: HTMLAudioElement | null;
@@ -78,7 +92,7 @@ const WordDialog: FC = () => {
     wordList.splice(wordIndex.currentIndex, 1);
     wordDispatch({ type: 'wordList', payload: wordList.slice() });
 
-    getWord(wordIndex.currentIndex);
+    getWord(wordIndex.currentIndex, loadingCb);
   };
 
   const diaLogActions = useMemo(() => {
@@ -86,14 +100,19 @@ const WordDialog: FC = () => {
       {
         key: 'confirm',
         text: '关闭',
+        disabled: isLoading,
+        onClick: () => {
+          wordDispatch({ type: 'wordDialogVisible', payload: false });
+        },
       },
     ];
     if (wordIndex.preIndex !== null) {
       actions.unshift({
         key: 'pre',
         text: '上一个',
+        disabled: isLoading,
         onClick: () => {
-          getWord(wordIndex.preIndex!);
+          getWord(wordIndex.preIndex!, loadingCb);
         },
       });
     }
@@ -101,13 +120,14 @@ const WordDialog: FC = () => {
       actions.push({
         key: 'next',
         text: '下一个',
+        disabled: isLoading,
         onClick: () => {
-          getWord(wordIndex.nextIndex!);
+          getWord(wordIndex.nextIndex!, loadingCb);
         },
       });
     }
     return [actions];
-  }, [wordIndex, getWord]);
+  }, [wordIndex, isLoading, getWord]);
 
   useEffect(() => {
     if (wordDialogVisible) {
@@ -131,7 +151,6 @@ const WordDialog: FC = () => {
   return (
     <Dialog
       visible={wordDialogVisible}
-      closeOnAction
       content={
         <>
           <div>单词：{word.word}</div>
@@ -182,6 +201,7 @@ const WordDialog: FC = () => {
                 <Button
                   color="danger"
                   size="small"
+                  loading={isLoading}
                   onClick={() => wordHandle(WordStatus.unfamiliar)}>
                   不认识
                 </Button>
@@ -190,6 +210,7 @@ const WordDialog: FC = () => {
                 <Button
                   color="warning"
                   size="small"
+                  loading={isLoading}
                   onClick={() => wordHandle(WordStatus.will)}>
                   不熟悉
                 </Button>
@@ -198,6 +219,7 @@ const WordDialog: FC = () => {
                 <Button
                   color="success"
                   size="small"
+                  loading={isLoading}
                   onClick={() => wordHandle(WordStatus.mastered)}>
                   已了解
                 </Button>
@@ -206,6 +228,7 @@ const WordDialog: FC = () => {
                 <Button
                   color="primary"
                   size="small"
+                  loading={isLoading}
                   onClick={() => wordHandle(WordStatus.familiar)}>
                   早就认识
                 </Button>
@@ -230,6 +253,8 @@ const WordDialog: FC = () => {
         </>
       }
       onClose={() => {
+        console.log('onClose');
+
         wordDispatch({ type: 'wordDialogVisible', payload: false });
       }}
       actions={diaLogActions}

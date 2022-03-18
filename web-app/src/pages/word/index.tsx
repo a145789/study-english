@@ -1,9 +1,10 @@
 import { Badge, Empty, InfiniteScroll, List, Tabs } from 'antd-mobile';
-import React, { FC, useContext, useEffect, useState } from 'react';
+import React, { FC, useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { RootContextData } from '../../store/ContextApp';
 import { getHandle } from '../../utils/fetch';
+import { useMainLoadingCb } from '../../utils/hooks';
 import { WordStatus } from './constants';
 import classes from './index.module.css';
 import WordContext, { WordContextData, WordListType } from './word-context';
@@ -36,6 +37,7 @@ const WordComponent: FC = () => {
     dispatch: wordDispatch,
   } = useContext(WordContextData);
   const { _id } = useParams();
+  const loadingCb = useMainLoadingCb();
 
   const unLoginAndUnFirst = !isLogin && wordStatus !== WordStatus.unfamiliar;
 
@@ -161,7 +163,7 @@ const WordComponent: FC = () => {
           <>
             <List>
               {wordList.map(({ _id, word }, index) => (
-                <ListItem key={_id} onClick={() => getWord(index)}>
+                <ListItem key={_id} onClick={() => getWord(index, loadingCb)}>
                   {word}
                 </ListItem>
               ))}

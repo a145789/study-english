@@ -8,7 +8,7 @@ import { CertificationProcess } from '../../constants';
 import { UserInfo } from '../../interface';
 import { RootContextData } from '../../store/ContextApp';
 import { postHandle } from '../../utils/fetch';
-import { useLoadingCb, useLogout } from '../../utils/hooks';
+import { useLogout, useMainLoadingCb } from '../../utils/hooks';
 import classes from './index.module.css';
 
 const { Item: FormItem } = Form;
@@ -69,7 +69,7 @@ const Login = () => {
   const [isUseCodeLogin, setIsUseCodeLogin] = useState(false);
   const [codeStatus, setCodeStatus] = useState(CodeStatus.send);
   const [codePendingNum, setPendingCode] = useState(INIT_PENDING_TIME);
-  const loadingCb = useLoadingCb();
+  const loadingCb = useMainLoadingCb();
 
   const codeTimer = useRef<number>(0);
 

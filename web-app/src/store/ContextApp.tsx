@@ -1,12 +1,5 @@
 import Cookies from 'js-cookie';
-import React, {
-  createContext,
-  FC,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useReducer,
-} from 'react';
+import React, { createContext, FC, ReactNode, useCallback, useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { UserInfo } from '../interface';

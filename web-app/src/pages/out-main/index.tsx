@@ -5,6 +5,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { RootContextData } from '../../store/ContextApp';
 import { useLogout } from '../../utils/hooks';
+import Loading from '../loading';
 import classes from './index.module.css';
 
 const { Item: TabBarItem } = TabBar;
@@ -27,6 +28,7 @@ const OutMain = memo(function OutMain() {
         <Outlet />
       </div>
       <MainTabBar />
+      <Loading />
     </>
   );
 });

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { RootContextData } from '../../store/ContextApp';
 import { getHandle } from '../../utils/fetch';
-import { useLoadingCb } from '../../utils/hooks';
+import { useMainLoadingCb } from '../../utils/hooks';
 
 const { Item: ListItem } = List;
 
@@ -17,7 +17,7 @@ type TypeList = {
 const WordBank: FC = () => {
   const { navBar, dispatch } = useContext(RootContextData);
   const navigate = useNavigate();
-  const loadingCb = useLoadingCb();
+  const loadingCb = useMainLoadingCb();
 
   const [list, setList] = useState<TypeList[]>([]);
 
