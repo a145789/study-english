@@ -1,6 +1,13 @@
 import { Button, Form, Input, Toast } from 'antd-mobile';
 import { Md5 } from 'md5-typescript';
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
@@ -71,7 +78,8 @@ const Login = () => {
   const [codePendingNum, setPendingCode] = useState(INIT_PENDING_TIME);
   const loadingCb = useMainLoadingCb();
 
-  const codeTimer = useRef<number>(0);
+  const codeTimerRef = useRef<number>(0);
+  const navBarRef = useRef<ReactNode>(navBar.right);
 
   const submit = async (values: any) => {
     switch (certificationProcess) {
@@ -89,6 +97,7 @@ const Login = () => {
         });
         setUserInfo(data);
         dispatch({ type: 'isLogin', payload: true });
+        navBarRef.current = null;
         navigate('/', { replace: true });
         break;
       }
@@ -106,6 +115,7 @@ const Login = () => {
           icon: 'success',
           content: '注册成功',
         });
+        setCertificationProcess(CertificationProcess.login);
 
         break;
       }
@@ -125,7 +135,7 @@ const Login = () => {
             content: '修改成功',
           });
 
-          logout();
+          logout({ notToReplaceHome: true });
           setCertificationProcess(CertificationProcess.login);
         }
         break;
@@ -173,42 +183,21 @@ const Login = () => {
     form.resetFields();
   }, [certificationProcess, isUseCodeLogin]);
   useEffect(() => {
+    let title = '';
     switch (certificationProcess) {
       case CertificationProcess.login:
         setCodeStatus(CodeStatus.send);
         setPendingCode(INIT_PENDING_TIME);
-        clearTimeout(codeTimer.current);
-        dispatch({
-          type: 'navBar',
-          payload: {
-            ...navBar,
-            title: '登录',
-            backArrow: true,
-            right: false,
-          },
-        });
+        clearTimeout(codeTimerRef.current);
+        title = '登录';
+
         break;
       case CertificationProcess.register:
-        dispatch({
-          type: 'navBar',
-          payload: {
-            ...navBar,
-            title: '注册',
-            backArrow: true,
-            right: false,
-          },
-        });
+        title = '注册';
+
         break;
       case CertificationProcess.updatePassword:
-        dispatch({
-          type: 'navBar',
-          payload: {
-            ...navBar,
-            title: '修改密码',
-            backArrow: true,
-            right: false,
-          },
-        });
+        title = '修改密码';
 
         form.setFieldsValue({ email: userInfo?.email });
         break;
@@ -216,13 +205,22 @@ const Login = () => {
       default:
         break;
     }
+    dispatch({
+      type: 'partialNavBar',
+      payload: {
+        ...navBar,
+        title,
+        backArrow: true,
+        right: null,
+      },
+    });
   }, [certificationProcess]);
 
   useEffect(() => {
     if (codeStatus !== CodeStatus.pending) {
       return;
     }
-    codeTimer.current = setTimeout(() => {
+    codeTimerRef.current = setTimeout(() => {
       const nextPendingNum = codePendingNum - 1;
       if (nextPendingNum < 0) {
         setCodeStatus(CodeStatus.resend);
@@ -231,21 +229,18 @@ const Login = () => {
       setPendingCode(nextPendingNum);
     }, 1000);
     return () => {
-      clearTimeout(codeTimer.current);
+      clearTimeout(codeTimerRef.current);
     };
   }, [codeStatus, codePendingNum]);
-
   useEffect(() => {
     dispatch({ type: 'isShowTabBar', payload: false });
     return () => {
       dispatch({ type: 'isShowTabBar', payload: true });
       dispatch({
-        type: 'navBar',
-        payload: {
-          ...navBar,
-          right: true,
-        },
+        type: 'partialNavBar',
+        payload: { right: navBarRef.current },
       });
+      navBarRef.current = null;
     };
   }, []);
 

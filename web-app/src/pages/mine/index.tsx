@@ -6,19 +6,20 @@ import { VERSION } from '../../constants';
 import { CertificationProcess } from '../../constants';
 import { RootContextData } from '../../store/ContextApp';
 import { postHandle } from '../../utils/fetch';
-import { useMainLoadingCb } from '../../utils/hooks';
+import { useLogout, useMainLoadingCb } from '../../utils/hooks';
 import { checkUserName } from '../login';
 import classes from './index.module.css';
 
 const { Item: ListItem } = List;
-const { Item: FormItem } = Form;
+const { Item: FormItem, useForm } = Form;
 const { show: ToastShow } = Toast;
 
 const Mine: FC = () => {
-  const { navBar, userInfo, setUserInfo, dispatch } = useContext(RootContextData);
+  const { userInfo, setUserInfo, dispatch } = useContext(RootContextData);
   const navigate = useNavigate();
-  const [form] = Form.useForm();
+  const [form] = useForm();
   const loadingCb = useMainLoadingCb();
+  const logout = useLogout();
 
   const [isUpdateUsername, setIsUpdateUsername] = useState(false);
 
@@ -43,8 +44,8 @@ const Mine: FC = () => {
 
   useEffect(() => {
     dispatch({
-      type: 'navBar',
-      payload: { ...navBar, title: '我的', backArrow: null },
+      type: 'partialNavBar',
+      payload: { title: '我的', backArrow: null },
     });
   }, []);
   return (
@@ -89,12 +90,14 @@ const Mine: FC = () => {
           </Form>
         )}
         <ListItem>邮箱：{userInfo?.email}</ListItem>
+        <ListItem>已背单词：{userInfo?.masteredCount || 0}</ListItem>
       </List>
       <List mode="card" header="操作">
         <ListItem
           onClick={() => navigate(`/login/${CertificationProcess.updatePassword}`)}>
           修改密码
         </ListItem>
+        <ListItem onClick={() => logout()}>退出登录</ListItem>
       </List>
       <AutoCenter className={classes.version}>版本号：v{VERSION}</AutoCenter>
     </>

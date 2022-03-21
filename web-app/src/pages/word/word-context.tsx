@@ -128,15 +128,6 @@ const WordContext: FC = ({ children }) => {
         rejectCb: () => void;
       },
     ) => {
-      dispatch({
-        type: 'wordIndex',
-        payload: {
-          preIndex: index === 0 ? null : index - 1,
-          currentIndex: index,
-          nextIndex:
-            index + 1 === state.wordListTabCount[state.wordStatus] ? null : index + 1,
-        },
-      });
       if (!state.wordList[index]) {
         dispatch({ type: 'wordDialogVisible', payload: false });
         return;
@@ -148,6 +139,15 @@ const WordContext: FC = ({ children }) => {
         dispatch({ type: 'wordDialogVisible', payload: false });
         return;
       }
+      dispatch({
+        type: 'wordIndex',
+        payload: {
+          preIndex: index === 0 ? null : index - 1,
+          currentIndex: index,
+          nextIndex:
+            index + 1 === state.wordListTabCount[state.wordStatus] ? null : index + 1,
+        },
+      });
       dispatch({ type: 'word', payload: data });
       dispatch({ type: 'wordDialogVisible', payload: true });
     },

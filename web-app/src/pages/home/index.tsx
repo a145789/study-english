@@ -9,7 +9,7 @@ import classes from './index.module.css';
 const { show: ToastShow } = Toast;
 
 const Home: FC = () => {
-  const { navBar, dispatch } = useContext(RootContextData);
+  const { dispatch } = useContext(RootContextData);
   const navigate = useNavigate();
 
   const goDictation = () => {
@@ -18,8 +18,8 @@ const Home: FC = () => {
 
   useEffect(() => {
     dispatch({
-      type: 'navBar',
-      payload: { ...navBar, title: '学英语', backArrow: null },
+      type: 'partialNavBar',
+      payload: { title: '学英语', backArrow: null },
     });
   }, []);
 

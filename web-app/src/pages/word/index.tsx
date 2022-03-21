@@ -21,12 +21,7 @@ type WordListParams = {
 };
 
 const WordComponent: FC = () => {
-  const {
-    navBar,
-    isLogin,
-    userInfo,
-    dispatch: rootDispatch,
-  } = useContext(RootContextData);
+  const { isLogin, userInfo, dispatch: rootDispatch } = useContext(RootContextData);
   const {
     wordList,
     pageOptions,
@@ -87,8 +82,8 @@ const WordComponent: FC = () => {
   }, [userInfo]);
   useEffect(() => {
     rootDispatch({
-      type: 'navBar',
-      payload: { ...navBar, title: '背单词', backArrow: true },
+      type: 'partialNavBar',
+      payload: { title: '背单词', backArrow: true },
     });
   }, []);
 

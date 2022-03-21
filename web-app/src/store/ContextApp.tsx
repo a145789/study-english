@@ -12,18 +12,25 @@ export type ActionType<T extends object> = {
   };
 }[keyof T];
 
+type RootActionType =
+  | ActionType<Omit<ContextStateType, 'dispatch'>>
+  | {
+      type: 'partialNavBar';
+      payload: Partial<ContextStateType['navBar']>;
+    };
+
 interface ContextStateType {
   navBar: {
     title: ReactNode;
     backArrow: ReactNode;
-    right: boolean;
+    right: ReactNode;
     onBack: () => void;
   };
   isLoading: boolean;
   isShowTabBar: boolean;
   isLogin: boolean;
   userInfo: UserInfo | null;
-  dispatch: (action: ActionType<Omit<ContextStateType, 'dispatch'>>) => void;
+  dispatch: (action: RootActionType) => void;
 }
 
 export const RootContextData = createContext<
@@ -33,13 +40,12 @@ export const RootContextData = createContext<
   }
 >(null as any);
 
-function reducer(
-  state: Omit<ContextStateType, 'dispatch'>,
-  action: ActionType<Omit<ContextStateType, 'dispatch'>>,
-) {
+function reducer(state: Omit<ContextStateType, 'dispatch'>, action: RootActionType) {
   switch (action.type) {
     case 'navBar':
       return { ...state, navBar: action.payload };
+    case 'partialNavBar':
+      return { ...state, navBar: { ...state.navBar, ...action.payload } };
     case 'isLoading':
       return { ...state, isLoading: action.payload };
     case 'isShowTabBar':
@@ -60,7 +66,7 @@ const ContextApp: FC = ({ children }) => {
     navBar: {
       title: '学英语',
       backArrow: null,
-      right: false,
+      right: null,
       onBack: () => {
         navigate(-1);
       },

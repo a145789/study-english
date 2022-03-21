@@ -11,7 +11,8 @@ import classes from './index.module.css';
 const { Item: TabBarItem } = TabBar;
 
 const OutMain = memo(function OutMain() {
-  const { isLogin, getUserInfo } = useContext(RootContextData);
+  const { isLogin, getUserInfo, dispatch } = useContext(RootContextData);
+  const navigate = useNavigate();
   const logout = useLogout();
 
   useEffect(() => {
@@ -19,6 +20,16 @@ const OutMain = memo(function OutMain() {
       getUserInfo();
     } else {
       logout({ isShowToast: false });
+      dispatch({
+        type: 'partialNavBar',
+        payload: {
+          right: (
+            <Button color="primary" fill="none" onClick={() => navigate('/login')}>
+              登录
+            </Button>
+          ),
+        },
+      });
     }
   }, [isLogin]);
   return (
@@ -36,46 +47,14 @@ const OutMain = memo(function OutMain() {
 function MainNavBar() {
   const {
     navBar: { title, backArrow, onBack, right },
-    isLogin,
-    userInfo,
-    dispatch,
   } = useContext(RootContextData);
-  const navigate = useNavigate();
-  const logout = useLogout();
 
-  const logHandle = async () => {
-    if (!isLogin || !userInfo) {
-      navigate('/login');
-    } else {
-      logout();
-    }
-  };
-
-  useEffect(() => {
-    dispatch({
-      type: 'navBar',
-      payload: {
-        title,
-        backArrow,
-        onBack,
-        right: true,
-      },
-    });
-  }, [isLogin]);
   return (
     <NavBar
       className={classes.nav_bar}
       backArrow={backArrow}
       onBack={onBack}
-      right={
-        <Button
-          color="primary"
-          fill="none"
-          style={{ display: right ? '' : 'none' }}
-          onClick={() => logHandle()}>
-          {isLogin ? '退出' : '登录'}
-        </Button>
-      }>
+      right={right}>
       {title}
     </NavBar>
   );

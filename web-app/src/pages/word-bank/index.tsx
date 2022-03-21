@@ -15,7 +15,7 @@ type TypeList = {
 };
 
 const WordBank: FC = () => {
-  const { navBar, dispatch } = useContext(RootContextData);
+  const { dispatch } = useContext(RootContextData);
   const navigate = useNavigate();
   const loadingCb = useMainLoadingCb();
 
@@ -31,8 +31,8 @@ const WordBank: FC = () => {
 
   useEffect(() => {
     dispatch({
-      type: 'navBar',
-      payload: { ...navBar, title: '单词库', backArrow: true },
+      type: 'partialNavBar',
+      payload: { title: '单词库', backArrow: true },
     });
     getTypeList();
   }, []);
