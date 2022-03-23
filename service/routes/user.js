@@ -1,5 +1,10 @@
 const router = require('koa-router')()
-const { sendEmail, responseCatch, getUserInfo } = require('../utils/index')
+const {
+  sendEmail,
+  responseCatch,
+  getUserInfo,
+  session_key
+} = require('../utils/index')
 const { userInfoFields } = require('../constants/index')
 const {
   EmailCodeMong: { EmailCodeModel },
@@ -7,7 +12,6 @@ const {
 } = require('../db/modules/user')
 const crypto = require('crypto')
 const { SEVEN_DAYS_LATER } = require('../constants/index')
-const shaKey = 'LoveAba'
 
 const checkEmailCode = async (email, emailCode) => {
   const emailCodeDb = await EmailCodeModel.findOne({ email })
@@ -122,7 +126,7 @@ router.post('/api/login', async (ctx, next) => {
 
     // 设置session
     const sessionId = crypto
-      .createHash('sha256', user._id + shaKey + new Date().getTime())
+      .createHash('sha256', user._id + session_key + new Date().getTime())
       .digest('hex')
 
     const { _doc } = await UserModel.findOneAndUpdate(

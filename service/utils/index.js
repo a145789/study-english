@@ -1,4 +1,9 @@
 const nodemailer = require('nodemailer')
+const fs = require('fs')
+
+const [emilId, sessionKey] = fs.readFileSync('Config').toString().split('\r\n')
+const [_1, emil_id] = emilId.trim().split('=')
+const [_2, session_key] = sessionKey.trim().split('=')
 
 const sendEmail = (email, emailCode) => {
   const transporter = nodemailer.createTransport({
@@ -8,7 +13,7 @@ const sendEmail = (email, emailCode) => {
     auth: {
       //发送者的账户密码
       user: '1484176425@qq.com', //账户
-      pass: 'yipcejqximobfffc' //smtp授权码，到邮箱设置下获取
+      pass: emil_id //smtp授权码，到邮箱设置下获取
     }
   })
   const mailOptions = {
@@ -45,4 +50,4 @@ const getUserInfo = _doc => {
     masteredCount: mastered?.length || 0
   }
 }
-module.exports = { sendEmail, responseCatch, getUserInfo }
+module.exports = { sendEmail, responseCatch, getUserInfo, session_key }
