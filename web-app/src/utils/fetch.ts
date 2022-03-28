@@ -1,5 +1,4 @@
 import { Toast } from 'antd-mobile';
-import Cookies from 'js-cookie';
 import qs from 'qs';
 
 import { ResponseCode } from '../constants';
@@ -69,10 +68,17 @@ const fetchHandle = async <T = any>(
 
   let err = false;
   if (code !== ResponseCode.success) {
-    Toast.show({
-      icon: 'fail',
-      content: message || '系统错误',
-    });
+    if (code === ResponseCode.unLogin) {
+      Toast.show({
+        icon: 'fail',
+        content: message || '登录过期',
+      });
+    } else {
+      Toast.show({
+        icon: 'fail',
+        content: message || '系统错误',
+      });
+    }
     err = true;
     rejectCb?.();
   }
