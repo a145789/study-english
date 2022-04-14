@@ -5,10 +5,12 @@ const {
 const { SEVEN_DAYS_LATER } = require('../constants/index')
 
 router.all('*', async (ctx, next) => {
-  ctx.userInfo = JSON.parse(
-    decodeURIComponent(ctx.cookies.get('userInfo') || '{}', 'UTF-8')
-  )
   const sessionId = ctx.cookies.get('session')
+  const userInfoCookies = ctx.cookies.get('userInfo')
+  ctx.isLogin = sessionId && userInfoCookies
+  ctx.userInfo = JSON.parse(
+    decodeURIComponent(userInfoCookies || '{}', 'UTF-8')
+  )
   if (sessionId) {
     if (!ctx.userInfo?.userId) {
       ctx.cookies.set('session', '', {
@@ -23,7 +25,7 @@ router.all('*', async (ctx, next) => {
       return
     }
     const user = await UserModel.findOne({ _id: ctx.userInfo.userId })
-    if(user.sessionId !== sessionId) {
+    if (user.sessionId !== sessionId) {
       ctx.cookies.set('session', '', {
         path: '/', // 有效范围
         httpOnly: true, // 只能在服务器修改

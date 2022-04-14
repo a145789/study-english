@@ -1,6 +1,10 @@
 const nodemailer = require('nodemailer')
 const fs = require('fs')
 
+const {
+  UserMong: { UserModel }
+} = require('../db/modules/user')
+
 const [emilId, sessionKey] = fs.readFileSync('Config').toString().split('\r\n')
 const [_1, emil_id] = emilId.trim().split('=')
 const [_2, session_key] = sessionKey.trim().split('=')
@@ -39,6 +43,34 @@ const responseCatch = async (ctx, cb) => {
   }
 }
 
+const isLoginHandel = async ctx => {
+  if (!ctx.isLogin) {
+    ctx.cookies.set('session', '', {
+      path: '/', // 有效范围
+      httpOnly: true, // 只能在服务器修改
+      maxAge: 0
+    })
+    ctx.cookies.set('userInfo', '', {
+      path: '/', // 有效范围
+      httpOnly: true, // 只能在服务器修改
+      maxAge: 0
+    })
+
+    if (ctx.userInfo?.userId) {
+      await UserModel.updateOne(
+        { _id: ctx.userInfo.userId },
+        { sessionId: '', updateTime: Date.now() }
+      )
+    }
+
+    return {
+      code: 401,
+      data: null
+    }
+  }
+  return
+}
+
 const getUserInfo = _doc => {
   const { _id, familiar, will, mastered, ...arg } = _doc
 
@@ -50,4 +82,10 @@ const getUserInfo = _doc => {
     masteredCount: mastered?.length || 0
   }
 }
-module.exports = { sendEmail, responseCatch, getUserInfo, session_key }
+module.exports = {
+  sendEmail,
+  responseCatch,
+  getUserInfo,
+  isLoginHandel,
+  session_key
+}

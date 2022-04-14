@@ -1,6 +1,6 @@
 const router = require('koa-router')()
 const mongoose = require('mongoose')
-const { responseCatch, getUserInfo } = require('../utils/index')
+const { responseCatch, getUserInfo, isLoginHandel } = require('../utils/index')
 const fetch = require('node-fetch')
 const { userInfoFields } = require('../constants/index')
 const {
@@ -190,18 +190,15 @@ router.get('/api/word', async (ctx, next) => {
 
 router.post('/api/word_handle', async (ctx, next) => {
   await responseCatch(ctx, async () => {
+    const loginErrBody = await isLoginHandel(ctx)
+    if (loginErrBody) {
+      ctx.body = loginErrBody
+      return
+    }
     const { _id, wordStatus, moveWordStatus } = ctx.request.body
     const {
       userInfo: { userId }
     } = ctx
-
-    if (!userId) {
-      ctx.body = {
-        code: 401,
-        message: '请先登录'
-      }
-      return
-    }
 
     const { _doc } = await UserModel.findOneAndUpdate(
       { _id: userId },

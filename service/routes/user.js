@@ -3,6 +3,7 @@ const {
   sendEmail,
   responseCatch,
   getUserInfo,
+  isLoginHandel,
   session_key
 } = require('../utils/index')
 const { userInfoFields } = require('../constants/index')
@@ -153,14 +154,19 @@ router.post('/api/login', async (ctx, next) => {
 
 router.post('/api/update_password', async (ctx, next) => {
   await responseCatch(ctx, async () => {
+    const loginErrBody = await isLoginHandel(ctx)
+    if (loginErrBody) {
+      ctx.body = loginErrBody
+      return
+    }
     const { password, email, emailCode } = ctx.request.body
     const {
       userInfo: { userId }
     } = ctx
 
-    const errBody = await checkEmailCode(email, emailCode)
-    if (errBody) {
-      ctx.body = errBody
+    const emailErrBody = await checkEmailCode(email, emailCode)
+    if (emailErrBody) {
+      ctx.body = emailErrBody
       return
     }
     await UserModel.updateOne(
@@ -177,6 +183,11 @@ router.post('/api/update_password', async (ctx, next) => {
 
 router.post('/api/update_username', async (ctx, next) => {
   await responseCatch(ctx, async () => {
+    const loginErrBody = await isLoginHandel(ctx)
+    if (loginErrBody) {
+      ctx.body = loginErrBody
+      return
+    }
     const { username } = ctx.request.body
     const {
       userInfo: { userId }
@@ -206,6 +217,12 @@ router.post('/api/update_username', async (ctx, next) => {
 
 router.post('/api/user_info', async (ctx, next) => {
   await responseCatch(ctx, async () => {
+    const loginErrBody = await isLoginHandel(ctx)
+    if (loginErrBody) {
+      console.log(loginErrBody);
+      ctx.body = loginErrBody
+      return
+    }
     const {
       userInfo: { userId }
     } = ctx
