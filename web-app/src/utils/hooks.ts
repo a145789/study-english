@@ -8,7 +8,7 @@ import { postHandle } from './fetch';
 
 const { show: ToastShow } = Toast;
 
-const useMainLoadingCb = () => {
+export const useMainLoadingCb = () => {
   const { dispatch } = useContext(RootContextData);
   const loadingCb = useMemo(
     () => ({
@@ -21,7 +21,7 @@ const useMainLoadingCb = () => {
   return loadingCb;
 };
 
-const useLogout = () => {
+export const useLogout = () => {
   const { setUserInfo, dispatch } = useContext(RootContextData);
   const loadingCb = useMainLoadingCb();
   const navigate = useNavigate();
@@ -46,5 +46,3 @@ const useLogout = () => {
     }
   };
 };
-
-export { useLogout, useMainLoadingCb };

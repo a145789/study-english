@@ -1,4 +1,4 @@
-import { AutoCenter, Button, Form, Input, List, Space, Toast } from 'antd-mobile';
+import { AutoCenter, Button, Dialog, Form, Input, List, Space, Toast } from 'antd-mobile';
 import React, { FC, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,7 +15,7 @@ const { Item: FormItem, useForm } = Form;
 const { show: ToastShow } = Toast;
 
 const Mine: FC = () => {
-  const { userInfo, setUserInfo, dispatch } = useContext(RootContextData);
+  const { isLogin, userInfo, setUserInfo, dispatch } = useContext(RootContextData);
   const navigate = useNavigate();
   const [form] = useForm();
   const loadingCb = useMainLoadingCb();
@@ -40,6 +40,14 @@ const Mine: FC = () => {
     } catch (error) {
       return;
     }
+  };
+  const logoutHandle = () => {
+    Dialog.confirm({
+      content: '确认退出登录',
+      onConfirm: async () => {
+        await logout();
+      },
+    });
   };
 
   useEffect(() => {
@@ -97,7 +105,7 @@ const Mine: FC = () => {
           onClick={() => navigate(`/login/${CertificationProcess.updatePassword}`)}>
           修改密码
         </ListItem>
-        <ListItem onClick={() => logout()}>退出登录</ListItem>
+        <ListItem onClick={() => logoutHandle()}>退出登录</ListItem>
       </List>
       <AutoCenter className={classes.version}>版本号：v{VERSION}</AutoCenter>
     </>
