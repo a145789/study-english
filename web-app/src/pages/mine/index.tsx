@@ -1,4 +1,14 @@
-import { AutoCenter, Button, Dialog, Form, Input, List, Space, Toast } from 'antd-mobile';
+import {
+  AutoCenter,
+  Button,
+  Calendar,
+  Dialog,
+  Form,
+  Input,
+  List,
+  Space,
+  Toast,
+} from 'antd-mobile';
 import React, { FC, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,9 +23,10 @@ import classes from './index.module.css';
 const { Item: ListItem } = List;
 const { Item: FormItem, useForm } = Form;
 const { show: ToastShow } = Toast;
+const { alert: DialogAlert, confirm: DialogConfirm } = Dialog;
 
 const Mine: FC = () => {
-  const { isLogin, userInfo, setUserInfo, dispatch } = useContext(RootContextData);
+  const { userInfo, setUserInfo, dispatch } = useContext(RootContextData);
   const navigate = useNavigate();
   const [form] = useForm();
   const loadingCb = useMainLoadingCb();
@@ -42,11 +53,41 @@ const Mine: FC = () => {
     }
   };
   const logoutHandle = () => {
-    Dialog.confirm({
+    DialogConfirm({
       content: '确认退出登录',
       onConfirm: async () => {
         await logout();
       },
+    });
+  };
+  const punch = async () => {
+    const { err, data } = await postHandle<{ punchTime: string[] }>(
+      'punch',
+      {},
+      loadingCb,
+    );
+    if (err) {
+      return;
+    }
+    DialogAlert({
+      title: '打卡记录',
+      content: (
+        <Calendar
+          renderLabel={(date) => {
+            if (
+              data.punchTime.some(
+                (pDate) =>
+                  new Date(date).toDateString() === new Date(pDate).toDateString(),
+              )
+            ) {
+              return '打卡';
+            } else {
+              return '';
+            }
+          }}
+        />
+      ),
+      confirmText: '关闭',
     });
   };
 
@@ -101,6 +142,7 @@ const Mine: FC = () => {
         <ListItem>已背单词：{userInfo?.masteredCount || 0}</ListItem>
       </List>
       <List mode="card" header="操作">
+        <ListItem onClick={() => punch()}>打卡</ListItem>
         <ListItem
           onClick={() => navigate(`/login/${CertificationProcess.updatePassword}`)}>
           修改密码

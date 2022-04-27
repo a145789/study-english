@@ -219,7 +219,6 @@ router.post('/api/user_info', async (ctx, next) => {
   await responseCatch(ctx, async () => {
     const loginErrBody = await isLoginHandel(ctx)
     if (loginErrBody) {
-      console.log(loginErrBody);
       ctx.body = loginErrBody
       return
     }
@@ -252,6 +251,42 @@ router.post('/api/logout', async (ctx, next) => {
     ctx.body = {
       code: 200,
       data: null
+    }
+  })
+})
+
+router.post('/api/punch', async (ctx, next) => {
+  await responseCatch(ctx, async () => {
+    const loginErrBody = await isLoginHandel(ctx)
+    if (loginErrBody) {
+      ctx.body = loginErrBody
+      return
+    }
+    const {
+      userInfo: { userId }
+    } = ctx
+    const { _doc: d1 } = await UserModel.findOne(
+      { _id: userId },
+      { _id: 1, punchTime: 1 }
+    )
+    const { punchTime } = d1
+    let data
+    if (
+      new Date(Date.now()).toDateString() ===
+      new Date(punchTime[punchTime.length - 1]).toDateString()
+    ) {
+      data = d1
+    } else {
+      const { _doc: d2 } = await UserModel.findOneAndUpdate(
+        { _id: userId },
+        { $push: { punchTime: Date.now() } },
+        { new: true, fields: { _id: 1, punchTime: 1 } }
+      )
+      data = d2
+    }
+    ctx.body = {
+      code: 200,
+      data
     }
   })
 })

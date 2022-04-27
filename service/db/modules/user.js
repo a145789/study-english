@@ -18,7 +18,8 @@ const UserSchema = Schema({
   familiar: { type: [Schema.Types.ObjectId], default: [] },
   will: { type: [Schema.Types.ObjectId], default: [] },
   mastered: { type: [Schema.Types.ObjectId], default: [] },
-  sessionId: { type: String }
+  sessionId: { type: String },
+  punchTime: { type: [Date], default: [] }
 })
 
 const UserModel = model('user', UserSchema)
