@@ -80,7 +80,7 @@ const Mine: FC = () => {
                   new Date(date).toDateString() === new Date(pDate).toDateString(),
               )
             ) {
-              return '打卡';
+              return '已打卡';
             } else {
               return '';
             }
