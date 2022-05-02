@@ -138,7 +138,7 @@ const WordDialog: FC = () => {
       audioRef.current.am?.load();
       audioRef.current.br?.load();
     }
-  }, [wordDialogVisible]);
+  }, [wordDialogVisible, word.word]);
   useEffect(() => {
     () => {
       audioRef.current = {
@@ -253,8 +253,6 @@ const WordDialog: FC = () => {
         </>
       }
       onClose={() => {
-        console.log('onClose');
-
         wordDispatch({ type: 'wordDialogVisible', payload: false });
       }}
       actions={diaLogActions}
