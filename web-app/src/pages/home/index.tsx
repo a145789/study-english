@@ -32,7 +32,7 @@ const Home: FC = () => {
         <div
           aria-hidden="true"
           className={classes.card}
-          onClick={() => navigate('dictation-config')}>
+          onClick={() => navigate('dictation-setting')}>
           <EditSFill color="#f6d365" className={classes.icon} />
           <div className={classes.font}>听写</div>
         </div>

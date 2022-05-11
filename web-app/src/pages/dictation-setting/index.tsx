@@ -8,7 +8,7 @@ import { useMainLoadingCb } from '../../utils/hooks';
 import { WordStatus } from '../word/constants';
 import { DictationMode } from './constants';
 
-const { Item: FormItem, useForm } = Form;
+const { Item: FormItem } = Form;
 const required = [{ required: true }];
 
 const DictationSetting: FC = () => {
@@ -48,7 +48,12 @@ const DictationSetting: FC = () => {
     wordBank: string[];
     wordStatus: string[];
   }) => {
-    console.log(mode);
+    dispatch({
+      type: 'dictationSetting',
+      payload: { count, mode: mode[0], wordBank, wordStatus },
+    });
+
+    navigate('/dictation');
   };
 
   useEffect(() => {
@@ -96,7 +101,12 @@ const DictationSetting: FC = () => {
             ]}
           />
         </FormItem>
-        <FormItem name="count" label="听写数量" extra={dictationCount}>
+        <FormItem
+          name="count"
+          label="听写数量"
+          rules={required}
+          initialValue={1}
+          extra={dictationCount}>
           <Slider
             step={1}
             max={30}

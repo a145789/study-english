@@ -30,6 +30,12 @@ interface ContextStateType {
   isShowTabBar: boolean;
   isLogin: boolean;
   userInfo: UserInfo | null;
+  dictationSetting: {
+    count: number;
+    mode: number;
+    wordBank: string[];
+    wordStatus: string[];
+  } | null;
   dispatch: (action: RootActionType) => void;
 }
 
@@ -54,6 +60,8 @@ function reducer(state: Omit<ContextStateType, 'dispatch'>, action: RootActionTy
       return { ...state, isLogin: action.payload };
     case 'userInfo':
       return { ...state, userInfo: action.payload };
+    case 'dictationSetting':
+      return { ...state, dictationSetting: action.payload };
     default:
       return state;
   }
@@ -75,6 +83,7 @@ const ContextApp: FC = ({ children }) => {
     isLogin: Boolean(JSON.parse(Cookies.get('userInfo') || 'null')),
     isShowTabBar: true,
     userInfo: JSON.parse(Cookies.get('userInfo') || 'null'),
+    dictationSetting: null,
   });
 
   const setUserInfo = useCallback((userInfo: UserInfo | null) => {

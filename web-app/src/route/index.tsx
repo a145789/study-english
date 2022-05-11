@@ -8,6 +8,7 @@ const Login = lazy(() => import('../pages/login'));
 const Word = lazy(() => import('../pages/word'));
 const Mine = lazy(() => import('../pages/mine'));
 const DictationSetting = lazy(() => import('../pages/dictation-setting'));
+const Dictation = lazy(() => import('../pages/dictation'));
 import OutMain from '../pages/out-main';
 
 const Route: FC = () => {
@@ -56,10 +57,18 @@ const Route: FC = () => {
           ),
         },
         {
-          path: 'dictation-config',
+          path: 'dictation-setting',
           element: (
             <Suspense fallback={dotLoading}>
               <DictationSetting />
+            </Suspense>
+          ),
+        },
+        {
+          path: 'dictation',
+          element: (
+            <Suspense fallback={dotLoading}>
+              <Dictation />
             </Suspense>
           ),
         },

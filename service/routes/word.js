@@ -224,4 +224,63 @@ router.post('/api/word_handle', async (ctx, next) => {
   })
 })
 
+router.get('/api/word_dictation', async (ctx, next) => {
+  await responseCatch(ctx, async () => {
+    const loginErrBody = await isLoginHandel(ctx)
+    if (loginErrBody) {
+      ctx.body = loginErrBody
+      return
+    }
+
+    const {
+      userInfo: { userId }
+    } = ctx
+    const { count, wordBank, wordStatus } = ctx.query
+
+    const { _doc } = await UserModel.findOne(
+      { _id: userId },
+      { familiar: 1, mastered: 1, will: 1 }
+    )
+
+    const wordList = Array.isArray(wordStatus)
+      ? wordStatus.reduce((acc, cur) => {
+          acc.push(..._doc[cur])
+          return acc
+        }, [])
+      : _doc[wordStatus]
+
+    const words = await WordModel.find(
+      {
+        _id: { $in: wordList },
+        type: { $in: Array.isArray(wordBank) ? wordBank : [wordBank] }
+      },
+      { type: 0, __v: 0 }
+    )
+
+    if (words.length !== count) {
+      const temp = {}
+      const data = []
+      let i = 0
+      while (i < count) {
+        const random = Math.floor(Math.random() * words.length)
+        if (!temp[random]) {
+          data.push(words[random])
+          temp[random] = true
+          i++
+        }
+      }
+
+      ctx.body = {
+        code: 200,
+        data: words
+      }
+    } else {
+      ctx.body = {
+        code: 200,
+        data
+      }
+    }
+  })
+})
+
 module.exports = router

@@ -94,7 +94,7 @@ const WordComponent: FC = () => {
           title={
             wordListTabCount[WordStatus.unfamiliar] !== null ? (
               <Badge
-                content={String(wordListTabCount[WordStatus.unfamiliar])}
+                content={wordListTabCount[WordStatus.unfamiliar]}
                 className={classes.word_badge}>
                 不认识
               </Badge>
@@ -108,7 +108,7 @@ const WordComponent: FC = () => {
           title={
             wordListTabCount[WordStatus.will] !== null ? (
               <Badge
-                content={String(wordListTabCount[WordStatus.will])}
+                content={wordListTabCount[WordStatus.will]}
                 className={classes.word_badge}>
                 不熟悉
               </Badge>
@@ -122,7 +122,7 @@ const WordComponent: FC = () => {
           title={
             wordListTabCount[WordStatus.mastered] !== null ? (
               <Badge
-                content={String(wordListTabCount[WordStatus.mastered])}
+                content={wordListTabCount[WordStatus.mastered]}
                 className={classes.word_badge}>
                 已了解
               </Badge>
@@ -136,7 +136,7 @@ const WordComponent: FC = () => {
           title={
             wordListTabCount[WordStatus.familiar] !== null ? (
               <Badge
-                content={String(wordListTabCount[WordStatus.familiar])}
+                content={wordListTabCount[WordStatus.familiar]}
                 className={classes.word_badge}>
                 早就认识
               </Badge>

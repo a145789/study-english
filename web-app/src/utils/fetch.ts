@@ -36,7 +36,7 @@ const fetchHandle = async <T = any>(
     headers,
   };
   if (params && method === 'GET') {
-    url = url + '?' + qs.stringify(params);
+    url = url + '?' + qs.stringify(params, { arrayFormat: 'repeat' });
   }
   if (params && method === 'POST') {
     options.body = JSON.stringify(params);
