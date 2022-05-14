@@ -7,6 +7,7 @@ import { getHandle } from '../../utils/fetch';
 import { useMainLoadingCb } from '../../utils/hooks';
 import { WordStatus } from './constants';
 import classes from './index.module.css';
+import { WordStatusCountType } from './interface';
 import WordContext, { WordContextData, WordListType } from './word-context';
 import WordDialog from './word-dialog';
 
@@ -21,7 +22,7 @@ type WordListParams = {
 };
 
 const WordComponent: FC = () => {
-  const { isLogin, userInfo, dispatch: rootDispatch } = useContext(RootContextData);
+  const { isLogin, dispatch: rootDispatch } = useContext(RootContextData);
   const {
     wordList,
     pageOptions,
@@ -31,14 +32,14 @@ const WordComponent: FC = () => {
     restPageOptions,
     dispatch: wordDispatch,
   } = useContext(WordContextData);
-  const { _id } = useParams();
+  const { wordTypeId } = useParams();
   const loadingCb = useMainLoadingCb();
 
   const unLoginAndUnFirst = !isLogin && wordStatus !== WordStatus.unfamiliar;
 
   const getWordList = async () => {
     const { data, err } = await getHandle<WordListParams>('word_list', {
-      _id,
+      wordTypeId,
       wordStatus,
       ...pageOptions,
     });
@@ -56,6 +57,23 @@ const WordComponent: FC = () => {
     wordDispatch({ type: 'pageOptions', payload: { ...pageOptions, hasMore, skip } });
   };
 
+  const getWordStatusCount = async () => {
+    const { data, err } = await getHandle<WordStatusCountType>('word_status_count', {
+      wordTypeId,
+    });
+    if (err) {
+      return;
+    }
+    wordDispatch({
+      type: 'otherWordListCount',
+      payload: {
+        [WordStatus.will]: data.willCount,
+        [WordStatus.mastered]: data.masteredCount,
+        [WordStatus.familiar]: data.familiarCount,
+      },
+    });
+  };
+
   const tabChange = (active: string) => {
     wordDispatch({ type: 'wordList', payload: [] });
     restPageOptions();
@@ -68,19 +86,7 @@ const WordComponent: FC = () => {
     }
   }, [isLogin, wordStatus]);
   useEffect(() => {
-    if (userInfo) {
-      const { willCount, masteredCount, familiarCount } = userInfo;
-      wordDispatch({
-        type: 'otherWordListCount',
-        payload: {
-          [WordStatus.will]: willCount,
-          [WordStatus.mastered]: masteredCount,
-          [WordStatus.familiar]: familiarCount,
-        },
-      });
-    }
-  }, [userInfo]);
-  useEffect(() => {
+    getWordStatusCount();
     rootDispatch({
       type: 'partialNavBar',
       payload: { title: '背单词', backArrow: true },

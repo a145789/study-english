@@ -2,12 +2,13 @@ import { Button, Dialog, Divider, Space } from 'antd-mobile';
 import { Action } from 'antd-mobile/es/components/modal/modal-action-button';
 import { SoundOutline } from 'antd-mobile-icons';
 import React, { FC, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
-import { UserInfo } from '../../interface';
 import { RootContextData } from '../../store/ContextApp';
 import { postHandle } from '../../utils/fetch';
 import { WordStatus } from './constants';
 import classes from './index.module.css';
+import { WordStatusCountType } from './interface';
 import { WordContextData } from './word-context';
 
 const enum AudioWordType {
@@ -27,7 +28,7 @@ const WordDialog: FC = () => {
     getWord,
     dispatch: wordDispatch,
   } = useContext(WordContextData);
-  const { setUserInfo } = useContext(RootContextData);
+  const { wordTypeId } = useParams();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -59,8 +60,9 @@ const WordDialog: FC = () => {
     }
   };
   const wordHandle = async (type: WordStatus) => {
-    const { err, data } = await postHandle<UserInfo>('word_handle', {
-      _id: word._id,
+    const { err, data } = await postHandle<WordStatusCountType>('word_handle', {
+      wordId: word._id,
+      wordTypeId,
       wordStatus,
       moveWordStatus: type,
     });
@@ -88,7 +90,14 @@ const WordDialog: FC = () => {
       });
     }
 
-    setUserInfo(data);
+    wordDispatch({
+      type: 'otherWordListCount',
+      payload: {
+        [WordStatus.will]: data.willCount,
+        [WordStatus.mastered]: data.masteredCount,
+        [WordStatus.familiar]: data.familiarCount,
+      },
+    });
     wordList.splice(wordIndex.currentIndex, 1);
     wordDispatch({ type: 'wordList', payload: wordList.slice() });
 

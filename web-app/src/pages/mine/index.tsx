@@ -15,9 +15,10 @@ import { useNavigate } from 'react-router-dom';
 import { VERSION } from '../../constants';
 import { CertificationProcess } from '../../constants';
 import { RootContextData } from '../../store/ContextApp';
-import { postHandle } from '../../utils/fetch';
+import { getHandle, postHandle } from '../../utils/fetch';
 import { useLogout, useMainLoadingCb } from '../../utils/hooks';
 import { checkUserName } from '../login';
+import { WordStatusCountType } from '../word/interface';
 import classes from './index.module.css';
 
 const { Item: ListItem } = List;
@@ -33,6 +34,21 @@ const Mine: FC = () => {
   const logout = useLogout();
 
   const [isUpdateUsername, setIsUpdateUsername] = useState(false);
+  const [masteredCount, setMasteredCount] = useState(0);
+
+  const getMasterCount = async () => {
+    const { err, data } = await getHandle<WordStatusCountType>(
+      'word_status_count',
+      {
+        mode: 'deduplication',
+      },
+      loadingCb,
+    );
+    if (err) {
+      return;
+    }
+    setMasteredCount(data.masteredCount);
+  };
 
   const updateUserName = async () => {
     try {
@@ -92,6 +108,7 @@ const Mine: FC = () => {
   };
 
   useEffect(() => {
+    getMasterCount();
     dispatch({
       type: 'partialNavBar',
       payload: { title: '我的', backArrow: null },
@@ -139,7 +156,7 @@ const Mine: FC = () => {
           </Form>
         )}
         <ListItem>邮箱：{userInfo?.email}</ListItem>
-        <ListItem>已背单词：{userInfo?.masteredCount || 0}</ListItem>
+        <ListItem>已背单词：{masteredCount}</ListItem>
       </List>
       <List mode="card" header="操作">
         <ListItem onClick={() => punch()}>打卡</ListItem>

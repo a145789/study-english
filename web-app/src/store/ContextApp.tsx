@@ -3,7 +3,7 @@ import React, { createContext, FC, ReactNode, useCallback, useReducer } from 're
 import { useNavigate } from 'react-router-dom';
 
 import { UserInfo } from '../interface';
-import { postHandle } from '../utils/fetch';
+import { getHandle } from '../utils/fetch';
 
 export type ActionType<T extends object> = {
   [key in keyof T]: {
@@ -98,7 +98,7 @@ const ContextApp: FC = ({ children }) => {
   }, []);
 
   const getUserInfo = useCallback(async () => {
-    const { err, data } = await postHandle<UserInfo>('user_info');
+    const { err, data } = await getHandle<UserInfo>('user_info');
     if (err) {
       return;
     }

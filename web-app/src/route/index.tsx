@@ -49,7 +49,7 @@ const Route: FC = () => {
           ),
         },
         {
-          path: 'word/:type/:_id',
+          path: 'word/:type/:wordTypeId',
           element: (
             <Suspense fallback={dotLoading}>
               <Word />

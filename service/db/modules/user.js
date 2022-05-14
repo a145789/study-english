@@ -14,10 +14,6 @@ const UserSchema = Schema({
   phone: { type: String },
   createTime: { type: Date, default: Date.now },
   updateTime: { type: Date, default: Date.now },
-  unfamiliar: { type: [Schema.Types.ObjectId], default: [] },
-  familiar: { type: [Schema.Types.ObjectId], default: [] },
-  will: { type: [Schema.Types.ObjectId], default: [] },
-  mastered: { type: [Schema.Types.ObjectId], default: [] },
   sessionId: { type: String },
   punchTime: { type: [Date], default: [] }
 })

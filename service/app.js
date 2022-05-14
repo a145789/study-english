@@ -1,5 +1,7 @@
 const Koa = require('koa')
 const app = new Koa()
+const Router = require('@koa/router')
+const router = new Router()
 const json = require('koa-json')
 const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
@@ -57,9 +59,16 @@ app.use(async (ctx, next) => {
 })
 
 // routes
-app.use(index.routes(), index.allowedMethods())
-app.use(user.routes(), user.allowedMethods())
-app.use(word.routes(), word.allowedMethods())
+app
+  .use(
+    (() => {
+      index(router)
+      user(router)
+      word(router)
+      return router.routes()
+    })()
+  )
+  .use(router.allowedMethods())
 
 // error-handling
 app.on('error', (err, ctx) => {

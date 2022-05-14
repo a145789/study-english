@@ -72,14 +72,11 @@ const isLoginHandel = async ctx => {
 }
 
 const getUserInfo = _doc => {
-  const { _id, familiar, will, mastered, ...arg } = _doc
+  const { _id, ...arg } = _doc
 
   return {
     ...arg,
-    userId: _id,
-    familiarCount: familiar?.length || 0,
-    willCount: will?.length || 0,
-    masteredCount: mastered?.length || 0
+    userId: _id
   }
 }
 module.exports = {

@@ -14,3 +14,9 @@ export type WordType = {
   /** 关联词 */
   association: { word: string; translation: string; _id: string }[];
 };
+
+export type WordStatusCountType = {
+  familiarCount: number;
+  willCount: number;
+  masteredCount: number;
+};

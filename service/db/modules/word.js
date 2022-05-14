@@ -5,7 +5,7 @@ const WordTypeSchema = Schema({
   name: { type: String },
   type: { type: String, required: true }
 })
-const WordTypeCodeModel = model('word_type', WordTypeSchema)
+const WordTypeModel = model('word_type', WordTypeSchema)
 
 const WordSchema = Schema({
   type: { type: [Schema.Types.ObjectId], default: [] },
@@ -26,7 +26,23 @@ const WordSchema = Schema({
 
 const WordModel = model('word', WordSchema)
 
+const WordInUserStatusSchema = Schema({
+  userId: { type: Schema.Types.ObjectId, required: true },
+  wordTypeId: { type: Schema.Types.ObjectId, required: true },
+  familiar: { type: [Schema.Types.ObjectId], default: [] },
+  will: { type: [Schema.Types.ObjectId], default: [] },
+  mastered: { type: [Schema.Types.ObjectId], default: [] },
+  createTime: { type: Date, default: Date.now },
+  updateTime: { type: Date, default: Date.now }
+})
+
+const WordInUserStatusModel = model(
+  'word_in_user_status',
+  WordInUserStatusSchema
+)
+
 module.exports = {
-  WordTypeCodeMong: { WordTypeSchema, WordTypeCodeModel },
-  WordMong: { WordSchema, WordModel }
+  WordTypeMong: { WordTypeSchema, WordTypeModel },
+  WordMong: { WordSchema, WordModel },
+  WordInUserStatusMong: { WordInUserStatusSchema, WordInUserStatusModel }
 }

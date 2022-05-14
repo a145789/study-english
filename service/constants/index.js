@@ -3,7 +3,6 @@ const userInfoFields = {
   sessionId: 0,
   createTime: 0,
   updateTime: 0,
-  unfamiliar: 0,
   phone: 0
 }
 
