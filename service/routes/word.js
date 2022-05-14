@@ -37,21 +37,11 @@ module.exports = router => {
           { _id: 0, familiar: 1, will: 1, mastered: 1 }
         )
         if (wordTypeStatus) {
-          const { will, mastered, familiar } = wordTypeStatus._doc || {
-            will: 0,
-            mastered: 0,
-            familiar: 0
-          }
+          const { will, mastered, familiar } = wordTypeStatus._doc
           wordIdList =
             wordStatus === 'unfamiliar'
               ? [...will, ...mastered, ...familiar]
               : wordTypeStatus[wordStatus]
-        } else {
-          const newWordTypeStatus = new WordInUserStatusModel({
-            userId,
-            wordTypeId
-          })
-          await newWordTypeStatus.save()
         }
       }
 
@@ -333,49 +323,68 @@ module.exports = router => {
       } = ctx
       const { wordTypeId, mode = 'normal' } = ctx.query
 
-      if (wordTypeId) {
-        const {
-          _doc: { familiar, mastered, will }
-        } = await WordInUserStatusModel.findOne({ userId, wordTypeId })
+      const data = {
+        familiarCount: 0,
+        masteredCount: 0,
+        willCount: 0
+      }
 
-        ctx.body = {
-          code: 200,
-          data: {
-            familiarCount: familiar.length,
-            masteredCount: mastered.length,
-            willCount: will.length
-          }
+      if (wordTypeId) {
+        const wordInUserStatus = await WordInUserStatusModel.findOne({
+          userId,
+          wordTypeId
+        })
+
+        if (!wordInUserStatus) {
+          const newWordTypeStatus = new WordInUserStatusModel({
+            userId,
+            wordTypeId
+          })
+          await newWordTypeStatus.save()
+        } else {
+          data.familiarCount = wordInUserStatus.familiar.length
+          data.masteredCount = wordInUserStatus.mastered.length
+          data.willCount = wordInUserStatus.will.length
         }
       } else {
         const wordInUserStatus = await WordInUserStatusModel.find({ userId })
-        const wordInUserStatusMerge = wordInUserStatus.reduce(
-          (acc, cur) => {
-            acc.familiar.push(...cur.familiar)
-            acc.mastered.push(...cur.mastered)
-            acc.will.push(...cur.will)
-            return acc
-          },
-          { familiar: [], mastered: [], will: [] }
-        )
+        if (!wordInUserStatus) {
+          const newWordTypeStatus = new WordInUserStatusModel({
+            userId,
+            wordTypeId
+          })
+          await newWordTypeStatus.save()
+        } else {
+          const wordInUserStatusMerge = wordInUserStatus.reduce(
+            (acc, cur) => {
+              acc.familiar.push(...cur.familiar)
+              acc.mastered.push(...cur.mastered)
+              acc.will.push(...cur.will)
+              return acc
+            },
+            { familiar: [], mastered: [], will: [] }
+          )
 
-        if (mode === 'deduplication') {
-          wordInUserStatusMerge.familiar = [
-            ...new Set(wordInUserStatusMerge.familiar)
-          ]
-          wordInUserStatusMerge.mastered = [
-            ...new Set(wordInUserStatusMerge.mastered)
-          ]
-          wordInUserStatusMerge.will = [...new Set(wordInUserStatusMerge.will)]
-        }
-
-        ctx.body = {
-          code: 200,
-          data: {
-            familiarCount: wordInUserStatusMerge.familiar.length,
-            masteredCount: wordInUserStatusMerge.mastered.length,
-            willCount: wordInUserStatusMerge.will.length
+          if (mode === 'deduplication') {
+            wordInUserStatusMerge.familiar = [
+              ...new Set(wordInUserStatusMerge.familiar)
+            ]
+            wordInUserStatusMerge.mastered = [
+              ...new Set(wordInUserStatusMerge.mastered)
+            ]
+            wordInUserStatusMerge.will = [
+              ...new Set(wordInUserStatusMerge.will)
+            ]
           }
+
+          data.familiarCount = wordInUserStatusMerge.familiar.length
+          data.masteredCount = wordInUserStatusMerge.mastered.length
+          data.willCount = wordInUserStatusMerge.will.length
         }
+      }
+      ctx.body = {
+        code: 200,
+        data
       }
     })
   })
