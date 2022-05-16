@@ -10,7 +10,7 @@ const {
 module.exports = router => {
   router.get('/api/word_type_list', async (ctx, next) => {
     await responseCatch(ctx, async () => {
-      const wordTypeList = await WordTypeModel.find({}, { wordHandle: 0 })
+      const wordTypeList = await WordTypeModel.find({})
       const data = wordTypeList || []
       ctx.body = {
         code: 200,
@@ -264,32 +264,51 @@ module.exports = router => {
       } = ctx
       const { count, wordBank, wordStatus } = ctx.query
 
-      const { _doc } = await UserModel.findOne(
-        { _id: userId },
-        { familiar: 1, mastered: 1, will: 1 }
+      const $or = Array.isArray(wordBank)
+        ? wordBank.map(id => ({ wordTypeId: id }))
+        : [{ wordTypeId: wordBank }]
+
+      const wordInUserStatus = await WordInUserStatusModel.find(
+        { userId, $or },
+        { _id: 0, familiar: 1, mastered: 1, will: 1 }
       )
 
-      const wordList = Array.isArray(wordStatus)
-        ? wordStatus.reduce((acc, cur) => {
-            acc.push(..._doc[cur])
+      if (!wordInUserStatus.length) {
+        ctx.body = {
+          code: 200,
+          data: []
+        }
+        return
+      }
+
+      const wordIdList = [
+        ...new Set(
+          wordInUserStatus.reduce((acc, cur) => {
+            if (Array.isArray(wordStatus)) {
+              wordStatus.forEach(status => {
+                acc.push(...cur[status])
+              })
+            } else {
+              acc.push(...cur[wordStatus])
+            }
             return acc
           }, [])
-        : _doc[wordStatus]
+        )
+      ]
 
       const words = await WordModel.find(
         {
-          _id: { $in: wordList },
-          type: { $in: Array.isArray(wordBank) ? wordBank : [wordBank] }
+          _id: { $in: wordIdList }
         },
-        { type: 0, __v: 0 }
+        { _id: 0, translation_1: 1, translation_2: 1, word: 1 }
       )
-
       if (words.length !== count) {
         const temp = {}
         const data = []
+        const critical = words.length > count ? count : words.length
         let i = 0
-        while (i < count) {
-          const random = Math.floor(Math.random() * words.length)
+        while (i < critical) {
+          const random = Math.floor(Math.random() * critical)
           if (!temp[random]) {
             data.push(words[random])
             temp[random] = true
@@ -299,12 +318,12 @@ module.exports = router => {
 
         ctx.body = {
           code: 200,
-          data: words
+          data
         }
       } else {
         ctx.body = {
           code: 200,
-          data
+          data: words
         }
       }
     })

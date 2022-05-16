@@ -4,7 +4,6 @@ import { SoundOutline } from 'antd-mobile-icons';
 import React, { FC, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { RootContextData } from '../../store/ContextApp';
 import { postHandle } from '../../utils/fetch';
 import { WordStatus } from './constants';
 import classes from './index.module.css';

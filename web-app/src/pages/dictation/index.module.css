@@ -1,0 +1,52 @@
+.box {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.progress {
+  display: flex;
+  justify-content: center;
+}
+
+.progress :global .adm-progress-circle {
+  --track-width: 5px;
+  --fill-color: #da697d;
+  --size: 90px;
+}
+
+.progress .middle {
+  font-size: 18px;
+}
+
+.card_content {
+  margin: 20px 20px;
+}
+
+.card_content .translation {
+  margin: 12px 0px;
+}
+
+.card_content :global .adm-input {
+  border-bottom: 2px solid;
+}
+
+.card_content .page {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+:global .adm-card {
+  height: 73%;
+}
+
+.submit {
+  margin-top: 18px;
+}
+
+.result{
+  height: 77%;
+  overflow-y: auto;
+}
