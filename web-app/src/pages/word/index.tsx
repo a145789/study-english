@@ -75,6 +75,9 @@ const WordComponent: FC = () => {
   };
 
   const tabChange = (active: string) => {
+    if (active === wordStatus) {
+      return;
+    }
     wordDispatch({ type: 'wordList', payload: [] });
     restPageOptions();
     wordDispatch({ type: 'wordStatus', payload: active as WordStatus });
@@ -86,7 +89,11 @@ const WordComponent: FC = () => {
     }
   }, [isLogin, wordStatus]);
   useEffect(() => {
-    getWordStatusCount();
+    if (isLogin) {
+      getWordStatusCount();
+    }
+  }, [isLogin]);
+  useEffect(() => {
     rootDispatch({
       type: 'partialNavBar',
       payload: { title: '背单词', backArrow: true },

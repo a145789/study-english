@@ -9,7 +9,7 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
-    "antd-mobile": "^5.12.2",
+    "antd-mobile": "^5.12.4",
     "antd-mobile-icons": "^0.2.2",
     "js-cookie": "^3.0.1",
     "md5-typescript": "^1.0.5",
