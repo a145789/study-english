@@ -24,7 +24,7 @@ import classes from './index.module.css';
 const { Item: ListItem } = List;
 const { Item: FormItem, useForm } = Form;
 const { show: ToastShow } = Toast;
-const { alert: DialogAlert, confirm: DialogConfirm } = Dialog;
+const { alert: DialogAlert, confirm: DialogConfirm, clear: DialogClear } = Dialog;
 
 const Mine: FC = () => {
   const { userInfo, setUserInfo, dispatch } = useContext(RootContextData);
@@ -113,6 +113,9 @@ const Mine: FC = () => {
       type: 'partialNavBar',
       payload: { title: '我的', backArrow: null },
     });
+    return () => {
+      DialogClear();
+    };
   }, []);
   return (
     <>

@@ -31,7 +31,8 @@ import classes from './index.module.css';
 
 const { Step } = Steps;
 const { Item: ListItem } = List;
-const { Title: SkeletonTitle, Paragraph: SkeletonParagraph } = Skeleton;
+const { Paragraph: SkeletonParagraph } = Skeleton;
+const { show: DialogShow, clear: DialogClear } = Dialog;
 
 const Dictation: FC = () => {
   const { dictationSetting, dispatch } = useContext(RootContextData);
@@ -189,7 +190,7 @@ const Dictation: FC = () => {
       setWords(words.slice());
     }
     if (words.some(({ dictationWord }) => !dictationWord)) {
-      Dialog.show({
+      DialogShow({
         title: '提示',
         content: '检测到您有未填写的单词，是否继续提交？',
         closeOnAction: true,
@@ -230,6 +231,9 @@ const Dictation: FC = () => {
       payload: { title: '听写设置', backArrow: true },
     });
     getDictation();
+    return () => {
+      DialogClear();
+    };
   }, []);
   return (
     <div className={classes.box}>

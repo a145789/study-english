@@ -13,11 +13,11 @@
 }
 
 .login_form :global .adm-list-body {
-  border-radius: 24px 24px 0 0;
+  border-radius: 24px 24px 0 0 !important;
 }
 
 .login_form :global .adm-form-footer {
-  padding: 0;
+  padding: 0 !important;
 }
 
 .login_button {
