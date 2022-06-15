@@ -1,4 +1,4 @@
-import React, { createContext, FC, useCallback, useReducer } from 'react';
+import React, { createContext, FC, ReactNode, useCallback, useReducer } from 'react';
 
 import { ActionType } from '../../store/ContextApp';
 import { getHandle } from '../../utils/fetch';
@@ -99,7 +99,7 @@ function reducer(state: Omit<ContextStateType, 'dispatch'>, action: WordActionTy
   }
 }
 
-const WordContext: FC = ({ children }) => {
+const WordContext: FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, {
     word: {} as WordType,
     wordDialogVisible: false,

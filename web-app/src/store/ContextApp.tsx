@@ -67,7 +67,7 @@ function reducer(state: Omit<ContextStateType, 'dispatch'>, action: RootActionTy
   }
 }
 
-const ContextApp: FC = ({ children }) => {
+const ContextApp: FC<{ children: ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
 
   const [state, dispatch] = useReducer(reducer, {
