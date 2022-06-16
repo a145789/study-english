@@ -5,6 +5,11 @@
   padding: 15px;
 }
 
+html[data-prefers-color-scheme='dark'] .home {
+  background-image: none;
+  background-color: var(--my-color-background);
+}
+
 .home_line {
   display: flex;
   height: 50%;
@@ -17,8 +22,11 @@
   justify-content: flex-end;
   color: #f6d365;
 }
+html[data-prefers-color-scheme='dark'] .home_line {
+  color: var(--adm-color-text);
+}
 .card {
-  background: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.5);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(8px);
   border-radius: 15px;
@@ -29,6 +37,9 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+html[data-prefers-color-scheme='dark'] .card {
+  background-color: #343434;
 }
 .icon {
   font-size: 82px;

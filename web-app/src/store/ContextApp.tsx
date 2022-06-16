@@ -36,6 +36,7 @@ interface ContextStateType {
     wordBank: string[];
     wordStatus: string[];
   } | null;
+  darkMode: boolean;
   dispatch: (action: RootActionType) => void;
 }
 
@@ -62,6 +63,8 @@ function reducer(state: Omit<ContextStateType, 'dispatch'>, action: RootActionTy
       return { ...state, userInfo: action.payload };
     case 'dictationSetting':
       return { ...state, dictationSetting: action.payload };
+    case 'darkMode':
+      return { ...state, darkMode: action.payload };
     default:
       return state;
   }
@@ -84,6 +87,7 @@ const ContextApp: FC<{ children: ReactNode }> = ({ children }) => {
     isShowTabBar: true,
     userInfo: JSON.parse(Cookies.get('userInfo') || 'null'),
     dictationSetting: null,
+    darkMode: false,
   });
 
   const setUserInfo = useCallback((userInfo: UserInfo | null) => {

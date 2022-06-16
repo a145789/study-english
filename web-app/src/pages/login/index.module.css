@@ -6,6 +6,11 @@
   background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);
 }
 
+html[data-prefers-color-scheme='dark'] .login {
+  background-image: none;
+  background-color: var(--my-color-background);
+}
+
 .login_form {
   margin: 64px 0 0;
   border-radius: 2px 2px 0 0;
@@ -22,6 +27,11 @@
 
 .login_button {
   --border-radius: 0 0 24px 24px;
+}
+
+html[data-prefers-color-scheme='dark'] .login_button {
+  background-color: var(--adm-color-background);
+  border-color: var(--adm-color-border);
 }
 
 .login_switch {

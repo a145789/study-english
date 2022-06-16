@@ -6,7 +6,7 @@ import { RootContextData } from '../../store/ContextApp';
 import classes from './index.module.css';
 
 const Home: FC = () => {
-  const { dispatch } = useContext(RootContextData);
+  const { darkMode, dispatch } = useContext(RootContextData);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,7 +23,7 @@ const Home: FC = () => {
           aria-hidden="true"
           className={classes.card}
           onClick={() => navigate('word-bank')}>
-          <ContentOutline color="#feada6" className={classes.icon} />
+          <ContentOutline color={darkMode ? '' : '#feada6'} className={classes.icon} />
           <div className={classes.font}>背单词</div>
         </div>
       </div>
@@ -33,7 +33,7 @@ const Home: FC = () => {
           aria-hidden="true"
           className={classes.card}
           onClick={() => navigate('dictation-setting')}>
-          <EditSFill color="#f6d365" className={classes.icon} />
+          <EditSFill color={darkMode ? '' : '#f6d365'} className={classes.icon} />
           <div className={classes.font}>听写</div>
         </div>
       </div>

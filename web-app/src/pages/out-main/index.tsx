@@ -11,7 +11,7 @@ import classes from './index.module.css';
 const { Item: TabBarItem } = TabBar;
 
 const OutMain = memo(function OutMain() {
-  const { isLogin, getUserInfo, dispatch } = useContext(RootContextData);
+  const { isLogin, darkMode, getUserInfo, dispatch } = useContext(RootContextData);
   const navigate = useNavigate();
   const logout = useLogout();
 
@@ -32,6 +32,22 @@ const OutMain = memo(function OutMain() {
       });
     }
   }, [isLogin]);
+  useEffect(() => {
+    const darkMode = Boolean(localStorage.getItem('darkMode'));
+    dispatch({
+      type: 'darkMode',
+      payload: darkMode,
+    });
+  }, []);
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.setAttribute('data-prefers-color-scheme', 'dark');
+      localStorage.setItem('darkMode', 'true');
+    } else {
+      document.documentElement.removeAttribute('data-prefers-color-scheme');
+      localStorage.removeItem('darkMode');
+    }
+  }, [darkMode]);
   return (
     <>
       <MainNavBar />

@@ -7,6 +7,7 @@ import {
   Input,
   List,
   Space,
+  Switch,
   Toast,
 } from 'antd-mobile';
 import React, { FC, useContext, useEffect, useState } from 'react';
@@ -27,7 +28,7 @@ const { show: ToastShow } = Toast;
 const { alert: DialogAlert, confirm: DialogConfirm, clear: DialogClear } = Dialog;
 
 const Mine: FC = () => {
-  const { userInfo, setUserInfo, dispatch } = useContext(RootContextData);
+  const { userInfo, darkMode, setUserInfo, dispatch } = useContext(RootContextData);
   const navigate = useNavigate();
   const [form] = useForm();
   const loadingCb = useMainLoadingCb();
@@ -106,6 +107,12 @@ const Mine: FC = () => {
       confirmText: '关闭',
     });
   };
+  const darkModeChange = (checked: boolean) => {
+    dispatch({
+      type: 'darkMode',
+      payload: checked,
+    });
+  };
 
   useEffect(() => {
     getMasterCount();
@@ -162,6 +169,9 @@ const Mine: FC = () => {
         <ListItem>已背单词：{masteredCount}</ListItem>
       </List>
       <List mode="card" header="操作">
+        <ListItem arrow={<Switch checked={darkMode} onChange={darkModeChange} />}>
+          深色模式
+        </ListItem>
         <ListItem onClick={() => punch()}>打卡</ListItem>
         <ListItem
           onClick={() => navigate(`/login/${CertificationProcess.updatePassword}`)}>
