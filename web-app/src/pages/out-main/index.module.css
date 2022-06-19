@@ -1,7 +1,10 @@
 .center {
   flex: 1;
-  overflow: hidden;
+  overflow-y: auto;
   background-color: var(--my-color-background);
+  transition-property: color, background-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 250ms;
 }
 
 .nav_bar {
