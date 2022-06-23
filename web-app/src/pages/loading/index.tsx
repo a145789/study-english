@@ -5,10 +5,10 @@ import { RootContextData } from '../../store/ContextApp';
 import classes from './index.module.css';
 
 const Loading = () => {
-  const { isLoading } = useContext(RootContextData);
+  const { isLoading, darkMode } = useContext(RootContextData);
 
   return (
-    <Mask visible={isLoading} color="white">
+    <Mask visible={isLoading} color={darkMode ? 'black' : 'white'}>
       <SpinLoading color="primary" className={classes.loading_content} />
     </Mask>
   );
