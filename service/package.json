@@ -8,12 +8,13 @@
     "prd": "pm2 start bin/www",
     "prestart": "pm2 restart bin/www",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "taze": "taze -w"
   },
   "dependencies": {
     "@koa/router": "^10.1.1",
     "add": "^2.0.6",
-    "debug": "^4.1.1",
+    "debug": "^4.3.4",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
     "koa-conditional-get": "^3.0.0",
@@ -24,11 +25,12 @@
     "koa-logger": "^3.2.1",
     "koa-onerror": "^4.2.0",
     "koa-static": "^5.0.0",
-    "mongoose": "^6.3.3",
+    "mongoose": "^6.4.0",
     "node-fetch": "2",
     "nodemailer": "^6.7.5"
   },
   "devDependencies": {
-    "nodemon": "^2.0.16"
+    "nodemon": "^2.0.18",
+    "taze": "^0.7.4"
   }
 }
