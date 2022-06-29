@@ -17,6 +17,7 @@ const DictationSetting: FC = () => {
   const loadingCb = useMainLoadingCb();
 
   const [wordBank, setWordBank] = useState<{ label: string; value: string }[]>([]);
+  const [count, setCount] = useState(1);
 
   const getWordBank = async () => {
     const { data, err } = await getHandle<
@@ -96,8 +97,18 @@ const DictationSetting: FC = () => {
             ]}
           />
         </FormItem>
-        <FormItem name="count" label="听写数量" rules={required} initialValue={1}>
-          <Slider step={1} max={30} min={1} popover />
+        <FormItem
+          name="count"
+          label="听写数量"
+          rules={required}
+          initialValue={1}
+          extra={count}>
+          <Slider
+            onChange={(value) => setCount(value as number)}
+            step={1}
+            max={30}
+            min={1}
+          />
         </FormItem>
       </Form>
     </>
