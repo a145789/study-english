@@ -75,9 +75,6 @@ const WordComponent: FC = () => {
   };
 
   const tabChange = (active: string) => {
-    if (active === wordStatus) {
-      return;
-    }
     wordDispatch({ type: 'wordList', payload: [] });
     restPageOptions();
     wordDispatch({ type: 'wordStatus', payload: active as WordStatus });

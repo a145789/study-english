@@ -82,10 +82,6 @@ function MainTabBar() {
   const { pathname } = useLocation();
 
   const tabBarChange = (key: string) => {
-    if (key === pathname) {
-      return;
-    }
-
     navigate(key);
   };
 
