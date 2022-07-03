@@ -1,5 +1,5 @@
 import { Mask, SpinLoading } from 'antd-mobile';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 import { RootContextData } from '../../store/ContextApp';
 import classes from './index.module.css';

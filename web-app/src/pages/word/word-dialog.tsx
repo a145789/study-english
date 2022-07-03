@@ -1,7 +1,7 @@
 import { Button, Dialog, Divider, Space } from 'antd-mobile';
 import { Action } from 'antd-mobile/es/components/dialog/dialog-action-button';
 import { SoundOutline } from 'antd-mobile-icons';
-import React, { FC, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { postHandle } from '../../utils/fetch';

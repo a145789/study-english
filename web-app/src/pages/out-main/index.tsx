@@ -1,6 +1,6 @@
 import { Button, NavBar, TabBar } from 'antd-mobile';
 import { AppOutline } from 'antd-mobile-icons';
-import React, { memo, useContext, useEffect } from 'react';
+import { memo, useContext, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { RootContextData } from '../../store/ContextApp';

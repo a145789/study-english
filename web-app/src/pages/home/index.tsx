@@ -1,5 +1,5 @@
 import { ContentOutline, EditSFill } from 'antd-mobile-icons';
-import React, { FC, useContext, useEffect } from 'react';
+import { FC, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { RootContextData } from '../../store/ContextApp';

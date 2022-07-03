@@ -1,4 +1,4 @@
-import React, { createContext, FC, ReactNode, useCallback, useReducer } from 'react';
+import { createContext, FC, ReactNode, useCallback, useReducer } from 'react';
 
 import { ActionType } from '../../store/ContextApp';
 import { getHandle } from '../../utils/fetch';

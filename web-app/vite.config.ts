@@ -1,4 +1,4 @@
-import reactRefresh from '@vitejs/plugin-react-refresh';
+import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import checker from 'vite-plugin-checker';
 import viteCompression from 'vite-plugin-compression';
@@ -24,7 +24,7 @@ export default defineConfig({
     },
   },
   plugins: [
-    reactRefresh(),
+    react(),
     viteCompression({ ext: '.gz', deleteOriginFile: false }),
     checker({
       typescript: true,

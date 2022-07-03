@@ -1,5 +1,5 @@
 import { SpinLoading } from 'antd-mobile';
-import React, { FC, lazy, Suspense, useMemo } from 'react';
+import { FC, lazy, Suspense, useMemo } from 'react';
 import { useRoutes } from 'react-router-dom';
 
 const Home = lazy(() => import('../pages/home'));

@@ -1,5 +1,5 @@
 import { Badge, Empty, InfiniteScroll, List, Tabs } from 'antd-mobile';
-import React, { FC, useContext, useEffect } from 'react';
+import { FC, useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { RootContextData } from '../../store/ContextApp';

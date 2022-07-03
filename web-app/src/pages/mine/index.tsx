@@ -10,7 +10,7 @@ import {
   Switch,
   Toast,
 } from 'antd-mobile';
-import React, { FC, useContext, useEffect, useState } from 'react';
+import { FC, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { VERSION } from '../../constants';

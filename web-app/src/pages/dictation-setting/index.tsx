@@ -1,5 +1,5 @@
 import { Button, Form, NoticeBar, Selector, Slider } from 'antd-mobile';
-import React, { FC, useContext, useEffect, useState } from 'react';
+import { FC, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { RootContextData } from '../../store/ContextApp';

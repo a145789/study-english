@@ -20,7 +20,7 @@ import {
   LeftOutline,
   RightOutline,
 } from 'antd-mobile-icons';
-import React, { FC, useContext, useEffect, useMemo, useState } from 'react';
+import { FC, useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { RootContextData } from '../../store/ContextApp';

@@ -1,13 +1,6 @@
 import { Button, Form, Input, Toast } from 'antd-mobile';
 import { Md5 } from 'md5-typescript';
-import React, {
-  ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
