@@ -4,8 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "sc": "cd ./scripts && pnpm sc"
+    "sc": "cd ./scripts && pnpm sc",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s && git add ." 
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "conventional-changelog-cli": "^2.2.2"
+  }
 }
