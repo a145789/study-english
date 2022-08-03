@@ -1,4 +1,4 @@
-# 1.0.0 (2022-07-20)
+## [4.3.3](https://github.com/a145789/study-english/compare/be97a2e3d053266cb9a3d736ad95c812b9ab0caa...v4.3.3) (2022-08-03)
 
 
 ### Bug Fixes
@@ -17,6 +17,7 @@
 * 修复退出时弹框依旧存在 ([4648315](https://github.com/a145789/study-english/commit/4648315a496d124cc0109f908ba90b6593b67d75))
 * 语音错误 ([b1ec33c](https://github.com/a145789/study-english/commit/b1ec33c64f7dd8e2803e703722b7951dcb98b123))
 * 增加401 ([945096d](https://github.com/a145789/study-english/commit/945096d19727158032a989a997473772eaee8b2d))
+* **app:** 修复听写跳转输入框无法回显 ([1f6f842](https://github.com/a145789/study-english/commit/1f6f8424815d1769f6776158f2c46c7864c717b9))
 * loading 机制变更 ([d18677e](https://github.com/a145789/study-english/commit/d18677eb9cde4dd4096d4567299f11517c05981a))
 * service 获取验证码改用post请求 ([ac35e98](https://github.com/a145789/study-english/commit/ac35e9864aeca6f2b1b128df72a7faaeb07a6b22))
 * service app add async ([149ae20](https://github.com/a145789/study-english/commit/149ae20384034e4eccc04e1699b366854dce3cad))
