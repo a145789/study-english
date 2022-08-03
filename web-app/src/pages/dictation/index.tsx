@@ -161,26 +161,28 @@ const Dictation: FC = () => {
   };
 
   const handle = (type: 'add' | 'del' | number) => {
+    let theCurrentIndex: number;
     switch (type) {
       case 'add':
-        setCurrentIndex(currentIndex + 1);
+        theCurrentIndex = currentIndex + 1;
         break;
       case 'del':
-        setCurrentIndex(currentIndex - 1);
+        theCurrentIndex = currentIndex - 1;
         break;
       default:
         if (type === currentIndex) {
           return;
         }
-        setCurrentIndex(type);
+        theCurrentIndex = type;
         break;
     }
     if (currentDictation) {
       word.dictationWord = currentDictation;
       words.splice(currentIndex, 1, word);
       setWords(words.slice());
-      setCurrentDictation('');
     }
+    setCurrentIndex(theCurrentIndex);
+    setCurrentDictation(words[theCurrentIndex].dictationWord);
   };
 
   const submit = () => {
@@ -228,7 +230,7 @@ const Dictation: FC = () => {
     }
     dispatch({
       type: 'partialNavBar',
-      payload: { title: '听写设置', backArrow: true },
+      payload: { title: '听写', backArrow: true },
     });
     getDictation();
     return () => {

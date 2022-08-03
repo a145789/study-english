@@ -145,6 +145,7 @@ const WordDialog: FC = () => {
       };
       audioRef.current.am?.load();
       audioRef.current.br?.load();
+      console.log(audioRef.current);
     }
   }, [wordDialogVisible, word.word]);
   useEffect(() => {
