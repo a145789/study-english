@@ -138,14 +138,9 @@ const WordDialog: FC = () => {
   }, [wordIndex, isLoading, getWord]);
 
   useEffect(() => {
-    if (wordDialogVisible) {
-      audioRef.current = {
-        am: document.getElementById('audioWordAm') as HTMLAudioElement,
-        br: document.getElementById('audioWordBr') as HTMLAudioElement,
-      };
-      audioRef.current.am?.load();
-      audioRef.current.br?.load();
-      console.log(audioRef.current);
+    if (wordDialogVisible && audioRef.current.am && audioRef.current.br) {
+      audioRef.current.am.load();
+      audioRef.current.br.load();
     }
   }, [wordDialogVisible, word.word]);
   useEffect(() => {
@@ -245,14 +240,14 @@ const WordDialog: FC = () => {
             </Space>
           </div>
 
-          <audio className={classes.audio} id="audioWordAm">
+          <audio className={classes.audio} ref={(el) => (audioRef.current.am = el)}>
             <source src={`https://dict.youdao.com/dictvoice?audio=${word.word}&type=2`} />
             <source
               src={`https://static2.youzack.com/youzack/wordaudio/us/${word.word}.mp3`}
             />
             <track kind="captions"></track>
           </audio>
-          <audio className={classes.audio} id="audioWordBr">
+          <audio className={classes.audio} ref={(el) => (audioRef.current.br = el)}>
             <source src={`https://dict.youdao.com/dictvoice?audio=${word.word}&type=1`} />
             <source
               src={`https://static2.youzack.com/youzack/wordaudio/br/${word.word}.mp3`}
