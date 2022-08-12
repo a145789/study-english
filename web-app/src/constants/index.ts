@@ -17,4 +17,4 @@ export const enum ResponseCode {
   timeout = 504,
 }
 
-export const VERSION = '4.3.3';
+export const VERSION = '4.3.6';
