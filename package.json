@@ -5,18 +5,18 @@
   "main": "index.js",
   "scripts": {
     "sc": "cd ./scripts && pnpm sc",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s && git add .",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "release-f": "standard-version -f",
+    "release-major": "standard-version -r major",
+    "release-minor": "standard-version -r minor",
+    "release-patch": "standard-version -r patch"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "conventional-changelog-cli": "^2.2.2"
-  },
   "devDependencies": {
     "@commitlint/cli": "^17.0.3",
     "@commitlint/config-conventional": "^17.0.3",
-    "add": "^2.0.6",
-    "husky": "^8.0.1"
+    "husky": "^8.0.1",
+    "standard-version": "^9.5.0"
   }
 }
