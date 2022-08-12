@@ -56,7 +56,8 @@ const checkPassWord = (_: any, value: string) => {
 };
 
 const Login = () => {
-  const { navBar, userInfo, setUserInfo, dispatch } = useContext(RootContextData);
+  const { isLogin, navBar, userInfo, setUserInfo, dispatch } =
+    useContext(RootContextData);
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const logout = useLogout();
@@ -64,7 +65,12 @@ const Login = () => {
   const { process } = useParams<{ process: CertificationProcess }>();
 
   const [certificationProcess, setCertificationProcess] = useState<CertificationProcess>(
-    process || CertificationProcess.login,
+    () => {
+      if (!process || (process === CertificationProcess.updatePassword && !isLogin)) {
+        return CertificationProcess.login;
+      }
+      return process;
+    },
   );
   const [isUseCodeLogin, setIsUseCodeLogin] = useState(false);
   const [codeStatus, setCodeStatus] = useState(CodeStatus.send);
