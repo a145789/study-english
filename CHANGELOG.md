@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.4.0](https://github.com/a145789/study-english/compare/v4.3.6...v4.4.0) (2022-10-13)
+
+
+### Features
+
+* **root:** update dep ([199cf67](https://github.com/a145789/study-english/commit/199cf677cc289ceeee207449348efa4ff99b45e4))
+
 ### [4.3.6](https://github.com/a145789/study-english/compare/v4.3.5...v4.3.6) (2022-08-12)
 
 
